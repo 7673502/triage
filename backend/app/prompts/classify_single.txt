@@ -1,0 +1,74 @@
+PRIORITIZATION LOGIC
+Assign an integer between 0 and 100:
+- 100 = extremely urgent and high-impact (life-safety threat in a high-traffic public space)
+- 0 = minimal urgency and low public impact (aesthetic issue, remote location, no harm risk)
+
+Step 1 — Classify the underlying impact type:
+- SAFETY_HAZARD: risk of injury, collision, fire, poisoning, or flooding
+- SERVICE_OUTAGE: disrupts public infrastructure (traffic signals, street lights, waste pickup)
+- ACCESS_ISSUE: blocks pedestrian or vehicle flow, but unlikely to cause harm
+- PROPERTY_DAMAGE: could become more costly if not fixed (e.g. water damage, broken pipe)
+- NUISANCE: cosmetic or minor annoyance (graffiti, trash, misplaced scooter)
+
+Step 2 — Gauge the urgency:
+- CRITICAL: poses life-safety or major service disruption if untreated within 24 hours
+- URGENT: could cause harm or damage if not addressed in a few days
+- ROUTINE: unlikely to escalate within a week
+
+Step 3 — Consider location context:
+- RIGHT_OF_WAY: street, sidewalk, curb-cut, bus stop, building entrance
+- PUBLIC USE AREA: playground, athletic field, plaza, busy shared trail
+- LOW TRAFFIC AREA: park interior, hiking trail, utility easement, vacant lot
+
+Modifiers:
+- A hazard in a LOW TRAFFIC AREA may not exceed 60 unless it poses imminent danger
+- If the image lacks clear context, assume PUBLIC USE AREA only if it shows pavement, benches, painted lines, or similar features; otherwise assume LOW TRAFFIC AREA
+- If image shows no visible hazard, cap priority at 40
+
+Use your judgment to assign a final float score based on impact type, urgency, and location.
+
+
+CONTEXT HEURISTIC (overrides above)
+Location context:
+- RIGHT OF-WAY - roadway, sidewalk, curb-cut, driveway, bus stop, building entrance
+- PUBlIC USE AREA - playground, athletic field, plaza, busy multi-use trail
+- LOW TRAFFIC AREA - park interior, hiking trail, vacant lot, utility easement
+A hazard in LOW-TRAFFIC AREA can be at most MEDIUM unless it poses an imminent threat to public safety.
+When image lacks clear context, default to PUBLIC-USE AREA only if the photo shows
+pavement, painted lines, benches, or other built features; otherwise default to
+LOW-TRAFFIC AREA.
+
+
+PRIORITIZATION EXAMPLES:
+- Graffiti on utility box in park: 15
+- Broken streetlight at major intersection: 75
+- Large tree limb blocking sidewalk: 50
+- Fire hazard near playground: 95
+
+
+FLAG LOGIC
+Compare the description, declared category, and image(s). If any of the following conditions apply, assign the corresponding flag(s):
+- flag = CATEGORY_MISMATCH — the described issue does not match the declared category or service code
+- flag = IMAGE_MISMATCH — the image contradicts the description or shows a different issue entirely
+- flag = OVERSTATED_SEVERITY — the tone claims CRITICAL/URGENT but evidence shows a minor or routine issue
+- flag = UNCLEAR — description is vague, incomplete, or unverifiable; or image is blurry or lacks visible issue
+- flag = DUPLICATE — description indicates the issue has already been reported (e.g. "still not fixed", "as I said before")
+- flag = SPAM — unrelated content, testing, or abusive and immature language
+- flag = MISSING_INFO — key information is absent (e.g. location or issue not identifiable)
+- flag = MISCLASSIFIED_LOCATION — location data is clearly incorrect (e.g. outside jurisdiction, invalid address)
+- flag = NON_ISSUE — complaint is invalid or inappropriate for 311 (e.g. neighbor disputes, legal parking)
+
+If none of the above apply, set:
+- flag = VALID
+
+Special rules:
+- If the image shows no clear hazard, MAX priority = LOW
+- Ignore purely aesthetic language (“ugly”, “eyesore”) unless paired with a real hazard
+- Always base priority on the more credible source (usually the image)
+- Do not flag CATEGORY_MISMATCH solely for vague service codes like "Other" or "General Request" if the description is appropriate and common for those categories (e.g. homelessness, noise, quality-of-life concerns). These are valid in systems that use general-purpose intake channels like the "Mayor's 24 Hour Hotline" or similar.
+- Multiple flags can be set if applicable
+
+
+OUTPUT LIMITS
+- priority_explanation ≤ 15 words
+- flag_explanation     ≤ 15 words (empty when flag = OK)

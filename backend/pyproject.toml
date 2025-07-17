@@ -6,6 +6,7 @@ python = "^3.11"
 fastapi = {extras = ["standard"], version = "^0.116.1"}
 georeport = "^0.3.1"
 redis = "^6.2.0"
+pydantic = "^2.11.7"
 
 [build-system]
 requires = ["poetry-core"]
