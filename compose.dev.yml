@@ -19,3 +19,9 @@ services:
     image: "redis:8.0.3-bookworm"
     ports:
       - "6379:6379"
+  
+  mock_open311:
+    build:
+      context: ./mock_open311
+    ports:
+      - "8081:80"
