@@ -6,14 +6,14 @@ ARG POETRY_VERSION=2.1.3
 FROM python:${PYTHON_TAG} AS dev
 
 ARG POETRY_VERSION
-RUN pip install poetry==${POETRY_VERSION}
+RUN pip install --no-cache-dir poetry==${POETRY_VERSION}
 
 RUN poetry config virtualenvs.create false
 
 WORKDIR /app
 
 COPY pyproject.toml poetry.lock ./
-RUN poetry install --no-interaction
+RUN poetry install --no-interaction --no-root
 
 COPY ./app ./app
 
