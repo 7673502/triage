@@ -33,5 +33,6 @@ async def classify_single(request: dict) -> ClassifiedPayload:
             text_format=ClassifiedPayload   
         )
         return response.output_parsed
+
     except OpenAIError as e:
         raise RuntimeError(f'OpenAI API error: {e}')
