@@ -1,9 +1,17 @@
 from fastapi import FastAPI
 from datetime import datetime, timezone
 from pydantic import BaseModel
+import copy
+
+def parse_time(t: str) -> datetime:
+    dt = datetime.fromisoformat(t.replace('Z', '+00:00'))
+    return dt.replace(tzinfo=timezone.utc)
+
+def format_time(t: datetime) -> str:
+    return t.astimezone(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')
 
 class RequestIn(BaseModel):
-    service_name: str
+    service_code: str
     description: str | None = None
     media_url: str | None = None
     address: str | None = None
@@ -11,7 +19,13 @@ class RequestIn(BaseModel):
     long: float | None = None
 
 app = FastAPI()
-db = []
+db = [] 
+
+SERVICES = {
+    '1': 'Pothole',
+    '2': 'Broken Sidewalk',
+    '3': 'Litter'
+}
 
 @app.post('/requests', status_code=201)
 async def create_request(request: RequestIn):
@@ -21,25 +35,44 @@ async def create_request(request: RequestIn):
     new_request = {
         'service_request_id': str(len(db)),
         'status': 'open',
-        'service_name': request.service_name,
         'requested_datetime': formatted_time,
         'updated_datetime': formatted_time,
+        'service_name': SERVICES[request.service_code]
     }
 
-    if request.description:
-        new_request['description'] = request.description
-    if request.media_url:
-        new_request['media_url'] = request.media_url
-    if request.address:
-        new_request['address'] = request.address
-    if request.lat:
-        new_request['lat'] = request.lat
-    if request.long:
-        new_request['long'] = request.long
+    new_request = new_request | request.model_dump(exclude_none=True)
 
     db.append(new_request)
     return new_request
 
 @app.get('/requests')
-async def get_requests():
-    return db
+async def get_requests(
+    service_request_id: str | None = None,
+    service_code: str | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    page: int = 1,
+    page_size: int = 50
+):
+    filtered_db = copy.copy(db)
+    if service_request_id:
+        ids = {i.strip() for i in service_request_id.split(',')}
+        filtered_db = [i for i in filtered_db if i['service_request_id'] in ids]
+    else:
+        if service_code:
+            codes = {i.strip() for i in service_code.split(',')}
+            filtered_db = [i for i in filtered_db if i['service_code'] in codes]
+        if start_date:
+            start_dt = parse_time(start_date)
+            filtered_db = [i for i in filtered_db if parse_time(i['requested_datetime']) > start_dt]
+        if end_date:
+            end_dt = parse_time(end_date)
+            filtered_db = [i for i in filtered_db if parse_time(i['requested_datetime']) < end_dt]
+
+    start_index = page_size * (page - 1)
+    end_index = page_size * page
+
+    if start_index >= len(filtered_db):
+        return []
+
+    return filtered_db[start_index:end_index]
