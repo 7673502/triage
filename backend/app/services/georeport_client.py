@@ -26,6 +26,6 @@ async def fetch_requests(
     }
 
     async with httpx.AsyncClient() as client:
-        response = await client.get(f'{base_url}/requests', params=params, timeout=15)
+        response = await client.get(f'{base_url}/requests.json', params=params, timeout=15)
         response.raise_for_status()
         return response.json()

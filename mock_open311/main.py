@@ -45,7 +45,7 @@ async def create_request(request: RequestIn):
     db.append(new_request)
     return new_request
 
-@app.get('/requests')
+@app.get('/requests.json')
 async def get_requests(
     service_request_id: str | None = None,
     service_code: str | None = None,
