@@ -1,5 +1,5 @@
 from functools import lru_cache
-from pydantic import Field, AnyUrl
+from pydantic import Field
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     api_keys: str = Field(..., env='API_KEYS')
     redis_url: str = Field('redis://redis:6379/0', env='REDIS_URL')
     poll_interval: int = Field(60, env='POLL_INTERVAL')
-    cities: dict[str, AnyUrl] = Field(..., env='CITIES')
+    cities: dict[str, str] = Field(..., env='CITIES')
 
     class Config:
         env_file = '.env'

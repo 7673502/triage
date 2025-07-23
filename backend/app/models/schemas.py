@@ -10,5 +10,3 @@ class ClassifiedPayload(BaseModel):
 class ClassifiedResponse(BaseModel):
     id: str
     payload: ClassifiedPayload
-
-
