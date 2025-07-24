@@ -1,11 +1,11 @@
-from openai import OpenAI, OpenAIError
+from openai import AsyncOpenAI, OpenAIError
 from pathlib import Path
 import json
 from app.core.config import get_settings
 from app.models.schemas import ClassifiedPayload, BatchClassifiedPayload
 
 settings = get_settings()
-client = OpenAI(api_key=settings.openai_api_key)
+client = AsyncOpenAI(api_key=settings.openai_api_key)
 
 CLASSIFY_SINGLE_PROMPT_PATH = Path(__file__).parents[1] / 'prompts' / 'classify_single.txt'
 CLASSIFY_SINGLE_PROMPT = CLASSIFY_SINGLE_PROMPT_PATH.read_text()
@@ -13,7 +13,7 @@ CLASSIFY_SINGLE_PROMPT = CLASSIFY_SINGLE_PROMPT_PATH.read_text()
 CLASSIFY_BATCH_PROMPT_PATH = Path(__file__).parents[1] / 'prompts' / 'classify_batch.txt'
 CLASSIFY_BATCH_PROMPT = CLASSIFY_BATCH_PROMPT_PATH.read_text()
 
-def classify_single(request: dict) -> ClassifiedPayload:
+async def classify_single(request: dict) -> ClassifiedPayload:
     user_parts = [{
         'type': 'input_text',
         'text': json.dumps(request, ensure_ascii=False, separators=(',', ':'))
@@ -27,7 +27,7 @@ def classify_single(request: dict) -> ClassifiedPayload:
         })
 
     try:
-        response = client.responses.parse(
+        response = await client.responses.parse(
             model='o4-mini',
             input=[
                 {'role': 'system', 'content': CLASSIFY_SINGLE_PROMPT},
@@ -40,7 +40,7 @@ def classify_single(request: dict) -> ClassifiedPayload:
     except OpenAIError as e:
         raise RuntimeError(f'OpenAI API error: {e}')
 
-def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
+async def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
     model_input = [
         {'role': 'system', 'content': CLASSIFY_BATCH_PROMPT},
     ]
@@ -63,7 +63,7 @@ def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
         model_input.append(next_input)
 
     try:
-        response = client.responses.parse(
+        response = await client.responses.parse(
             model='o4-mini',
             input=model_input,
             text_format=BatchClassifiedPayload
