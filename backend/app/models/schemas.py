@@ -10,3 +10,6 @@ class ClassifiedPayload(BaseModel):
 class ClassifiedResponse(BaseModel):
     id: str
     payload: ClassifiedPayload
+
+class BatchClassifiedPayload(BaseModel):
+    requests: list[ClassifiedPayload]
