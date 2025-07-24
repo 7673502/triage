@@ -57,7 +57,7 @@ async def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
             next_input['content'].append({
                 'type': 'input_image',
                 'image_url': request['media_url'],
-                'detail': 'high'
+                'detail': 'low'
             })
 
         model_input.append(next_input)
