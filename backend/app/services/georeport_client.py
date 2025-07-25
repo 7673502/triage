@@ -5,7 +5,7 @@ from app.utils.time_helper import format_time
 
 settings = get_settings()
 
-async def fetch_requests(
+async def fetch_open_requests(
     city: str,
     *,
     start_date: datetime,
@@ -19,6 +19,7 @@ async def fetch_requests(
         raise ValueError(f'Unknown city: {city}')
 
     params = {
+        'status': 'open',
         'start_date': format_time(start_date),
         'end_date': format_time(end_date),
         'page_size': page_size,
