@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from datetime import datetime, timezone
 from pydantic import BaseModel
 import copy
@@ -44,6 +44,16 @@ async def create_request(request: RequestIn):
 
     db.append(new_request)
     return new_request
+
+@app.post('/close-request')
+async def close_request(request_id: str):
+    for req in db:
+        if req['service_request_id'] == request_id and req['status'] == 'open':
+            req['status'] = 'closed'
+            return 'Success!'
+        elif req['service_request_id'] == request_id:
+            raise HTTPException(400, 'Request is already closed')
+    raise HTTPException(404, 'Request with given ID couldn\'t be found')
 
 @app.get('/requests.json')
 async def get_requests(
