@@ -34,9 +34,9 @@ async def poll_city(city: str) -> None:
             # filter out processed requests
             new_requests = []
             for request in requests:
-                seen_ids.add(request['service_request_id'])
+                req_id = str(request['service_request_id'])
+                seen_ids.add(req_id)
 
-                req_id = request['service_request_id']
                 if await cache.is_cached(city, req_id):
                     continue
                 new_requests.append(request)
@@ -46,7 +46,7 @@ async def poll_city(city: str) -> None:
                 classifications = await classify_batch(new_requests)
 
                 for request, classified in zip(new_requests, classifications):
-                    req_id = request['service_request_id']
+                    req_id = str(request['service_request_id'])
                     payload = request | classified.model_dump()
                     payload['city'] = city
                     await cache.cache_request(city, req_id, payload)
