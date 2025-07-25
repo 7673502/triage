@@ -19,7 +19,7 @@ async def classify_single(request: dict) -> ClassifiedPayload:
         'text': json.dumps(request, ensure_ascii=False, separators=(',', ':'))
     }]
 
-    if 'media_url' in request:
+    if 'media_url' in request and isinstance(request['media_url'], str) and request['media_url'].startswith('http'):
         user_parts.append({
             'type': 'input_image',
             'image_url': request['media_url'],
@@ -53,7 +53,7 @@ async def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
             'text': json.dumps(request, ensure_ascii=False, separators=(',', ':'))
         }]
 
-        if 'media_url' in request:
+        if 'media_url' in request and isinstance(request['media_url'], str) and request['media_url'].startswith('http'):
             next_input['content'].append({
                 'type': 'input_image',
                 'image_url': request['media_url'],
