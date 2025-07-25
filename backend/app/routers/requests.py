@@ -1,7 +1,15 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, HTTPException
+from app.core.config import get_settings
+import app.services.cache as cache
 
-router = APIRouter(prefix='/requests')
+router = APIRouter(prefix='/cities')
 
-@router.get('/ping')
-async def ping():
-    return {'msg': 'pong'}
+settings = get_settings()
+
+@router.get('/{city}/requests')
+async def get_processed_requests(city: str):
+    if city not in settings.cities:
+        raise HTTPException(status_code=404, detail='City not found')
+    return await cache.mget_requests(city)
+
+
