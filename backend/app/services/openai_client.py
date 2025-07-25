@@ -68,7 +68,7 @@ async def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
             input=model_input,
             text_format=BatchClassifiedPayload
         )
-        return response.output_parsed
+        return response.output_parsed.requests
 
     except OpenAIError as e:
         raise RuntimeError(f'OpenAI API error: {e}')
