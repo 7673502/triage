@@ -3,8 +3,8 @@ import asyncio
 from datetime import datetime, timezone, timedelta
 from app.core.config import get_settings
 from app.services.georeport_client import fetch_open_requests
-from app.services.openai_client import classify_batch
-from app.utils.time_helper import parse_time, format_time
+from app.services.openai_client import classify_batch_in_chunks as classify_batch
+from app.utils.time_helper import format_time
 import app.services.cache as cache
 
 log = logging.getLogger('uvicorn.error')
@@ -43,6 +43,7 @@ async def poll_city(city: str) -> None:
 
             # classify new requests and cache them
             if new_requests:
+                log.info(f'{city}: page {page}, about to classify {len(new_requests)}')
                 classifications = await classify_batch(new_requests)
 
                 for request, classified in zip(new_requests, classifications):

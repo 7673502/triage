@@ -1,5 +1,6 @@
 from openai import AsyncOpenAI, OpenAIError
 from pathlib import Path
+import asyncio
 import json
 from app.core.config import get_settings
 from app.models.schemas import ClassifiedPayload, BatchClassifiedPayload
@@ -72,3 +73,13 @@ async def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
 
     except OpenAIError as e:
         raise RuntimeError(f'OpenAI API error: {e}')
+
+async def classify_batch_in_chunks(requests: list[dict], chunk_size: int = 20) -> list[ClassifiedPayload]:
+    outputs = []
+
+    for i in range(0, len(requests), chunk_size):
+        outputs += await classify_batch(requests[i : i + chunk_size])
+        await asyncio.sleep(settings.poll_interval)
+
+    return outputs
+
