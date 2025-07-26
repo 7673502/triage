@@ -5,7 +5,7 @@ Create a `.env` file at the project root with these values:
 ```
 OPENAI_API_KEY=[YOUR OPENAI KEY]
 API_KEYS=[COMMA SEPERATED LIST OF API KEYS]
-CITIES={"Test" : "http://localhost:8081"}
+CITIES={"test" : "http://mock_open311:80"}
 ```
 You can optionally add the `REDIS_URL` and `POLL_INTERVAL` if necessary otherwise they will default to `redis://redis:6379/0` and `60`, respectively.
 
