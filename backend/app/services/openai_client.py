@@ -1,46 +1,18 @@
-from openai import AsyncOpenAI, OpenAIError
+from openai import AsyncOpenAI, RateLimitError
 from pathlib import Path
 import asyncio
 import json
+import backoff
 from app.core.config import get_settings
 from app.models.schemas import ClassifiedPayload, BatchClassifiedPayload
 
 settings = get_settings()
 client = AsyncOpenAI(api_key=settings.openai_api_key)
 
-CLASSIFY_SINGLE_PROMPT_PATH = Path(__file__).parents[1] / 'prompts' / 'classify_single.txt'
-CLASSIFY_SINGLE_PROMPT = CLASSIFY_SINGLE_PROMPT_PATH.read_text()
-
 CLASSIFY_BATCH_PROMPT_PATH = Path(__file__).parents[1] / 'prompts' / 'classify_batch.txt'
 CLASSIFY_BATCH_PROMPT = CLASSIFY_BATCH_PROMPT_PATH.read_text()
 
-async def classify_single(request: dict) -> ClassifiedPayload:
-    user_parts = [{
-        'type': 'input_text',
-        'text': json.dumps(request, ensure_ascii=False, separators=(',', ':'))
-    }]
-
-    if 'media_url' in request and isinstance(request['media_url'], str) and request['media_url'].startswith('http'):
-        user_parts.append({
-            'type': 'input_image',
-            'image_url': request['media_url'],
-            'detail': 'high'
-        })
-
-    try:
-        response = await client.responses.parse(
-            model='o4-mini',
-            input=[
-                {'role': 'system', 'content': CLASSIFY_SINGLE_PROMPT},
-                {'role': 'user', 'content': user_parts}
-            ],
-            text_format=ClassifiedPayload   
-        )
-        return response.output_parsed
-
-    except OpenAIError as e:
-        raise RuntimeError(f'OpenAI API error: {e}')
-
+@backoff.on_exception(backoff.expo, RateLimitError)
 async def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
     model_input = [
         {'role': 'system', 'content': CLASSIFY_BATCH_PROMPT},
@@ -63,18 +35,15 @@ async def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
 
         model_input.append(next_input)
 
-    try:
-        response = await client.responses.parse(
-            model='o4-mini',
-            input=model_input,
-            text_format=BatchClassifiedPayload
-        )
-        return response.output_parsed.requests
+    response = await client.responses.parse(
+        model='o4-mini',
+        input=model_input,
+        text_format=BatchClassifiedPayload
+    )
+    return response.output_parsed.requests
 
-    except OpenAIError as e:
-        raise RuntimeError(f'OpenAI API error: {e}')
 
-async def classify_batch_in_chunks(requests: list[dict], chunk_size: int = 20) -> list[ClassifiedPayload]:
+async def classify_batch_in_chunks(requests: list[dict], chunk_size: int = 5) -> list[ClassifiedPayload]:
     outputs = []
 
     for i in range(0, len(requests), chunk_size):
