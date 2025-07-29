@@ -1,9 +1,12 @@
 import httpx
-from datetime import datetime, timezone
+from datetime import datetime
 from app.core.config import get_settings
 from app.utils.time_helper import format_time
 
 settings = get_settings()
+
+import logging
+log = logging.getLogger('uvicorn.error')
 
 async def fetch_open_requests(
     city: str,
@@ -26,7 +29,12 @@ async def fetch_open_requests(
         'page': page
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(f'{base_url}/requests.json', params=params, timeout=15)
+    timeout = httpx.Timeout(connect=5.0, read=45.0, write=10.0, pool=5.0)
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        response = await client.get(f'{base_url}/requests.json', params=params)
         response.raise_for_status()
-        return response.json()
+        try:
+            return response.json()
+        except Exception as e:
+            log.info(f"JSON decode error: {e}, body: {response.text}")
+            return []

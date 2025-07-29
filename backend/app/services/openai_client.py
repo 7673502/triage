@@ -1,4 +1,4 @@
-from openai import AsyncOpenAI, RateLimitError
+from openai import AsyncOpenAI, RateLimitError, BadRequestError
 from pathlib import Path
 import asyncio
 import json
@@ -11,6 +11,9 @@ client = AsyncOpenAI(api_key=settings.openai_api_key)
 
 CLASSIFY_BATCH_PROMPT_PATH = Path(__file__).parents[1] / 'prompts' / 'classify_batch.txt'
 CLASSIFY_BATCH_PROMPT = CLASSIFY_BATCH_PROMPT_PATH.read_text()
+
+import logging
+log = logging.getLogger('uvicorn.error')
 
 @backoff.on_exception(backoff.expo, RateLimitError)
 async def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
@@ -35,13 +38,29 @@ async def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
 
         model_input.append(next_input)
 
-    response = await client.responses.parse(
-        model='o4-mini',
-        input=model_input,
-        text_format=BatchClassifiedPayload
-    )
-    return response.output_parsed.requests
+    try:
+        response = await client.responses.parse(
+            model='o4-mini',
+            input=model_input,
+            text_format=BatchClassifiedPayload
+        )
 
+    # handle bad image urls
+    except BadRequestError as e:
+        if e.body['param'] == 'url' and e.body['code'] == 'invalid_value':
+            for i in range(len(model_input)):
+                if model_input[i]['role'] == 'system':
+                    continue
+                if len(model_input[i]['content']) == 2: # image is always second index of input content
+                    model_input[i]['content'].pop()
+
+        response = await client.responses.parse(
+            model='o4-mini',
+            input=model_input,
+            text_format=BatchClassifiedPayload
+        )
+
+    return response.output_parsed.requests
 
 async def classify_batch_in_chunks(requests: list[dict], chunk_size: int = 5) -> list[ClassifiedPayload]:
     outputs = []
