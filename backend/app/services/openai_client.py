@@ -1,5 +1,5 @@
-from openai import AsyncOpenAI
 import openai
+from openai import AsyncOpenAI
 from pathlib import Path
 import asyncio
 import json
@@ -38,7 +38,7 @@ async def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
             'text': json.dumps(request, ensure_ascii=False, separators=(',', ':'))
         }]
 
-        if 'media_url' in request and isinstance(request['media_url'], str) and request['media_url'].startswith('http'):
+        if 'media_url' in request and isinstance(request['media_url'], str) and request['media_url'].startswith('https'):
             next_input['content'].append({
                 'type': 'input_image',
                 'image_url': request['media_url'],
