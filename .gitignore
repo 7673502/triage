@@ -203,5 +203,7 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Ignore redis binary dump (dump.rdb) files
-
 *.rdb
+
+# Ignore vscode
+.vscode/*
