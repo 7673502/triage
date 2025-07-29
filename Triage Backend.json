@@ -1,0 +1,250 @@
+{
+  "info": {
+    "name": "Triage Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Classification",
+      "item": [
+        {
+          "name": "classified requests",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "http://localhost:8000/cities/:city/requests",
+              "protocol": "http",
+              "host": [
+                "localhost:8000"
+              ],
+              "path": [
+                "cities",
+                ":city",
+                "requests"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "city",
+                  "value": "boston"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "ping",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "demo123",
+                "disabled": false,
+                "type": "default"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "http://localhost:8000/ping",
+              "protocol": "http",
+              "host": [
+                "localhost:8000"
+              ],
+              "path": [
+                "ping"
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mock Endpoint",
+      "item": [
+        {
+          "name": "create request",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "http://localhost:8081/requests",
+              "protocol": "http",
+              "host": [
+                "localhost:8081"
+              ],
+              "path": [
+                "requests"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"open\",\n    \"service_code\": \"3\",\n    \"description\": \"Fallon field playground needs a deep clean and patching the holes on the ground\",\n    \"address\": \"Intersection Of Congreve St And South St, Roslindale, Ma\",\n    \"lat\": 42.28789071,\n    \"long\": -71.1359235,\n    \"media_url\": \"https://spot-boston-res.cloudinary.com/image/upload/v1753743782/boston/production/etlmwytgt3nfvafjba1p.jpg#spot=6480a26d-0dc8-43d5-ac36-5830bf780b9a\"\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "get requests",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "http://localhost:8081/requests.json?service_request_id=5&start_date=2025-07-23T07:46:35Z&end_date=2025-07-23T07:46:38Z&service_code=3&page=2&page_size=2",
+              "protocol": "http",
+              "host": [
+                "localhost:8081"
+              ],
+              "path": [
+                "requests.json"
+              ],
+              "query": [
+                {
+                  "key": "service_request_id",
+                  "value": "5"
+                },
+                {
+                  "key": "start_date",
+                  "value": "2025-07-23T07:46:35Z"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2025-07-23T07:46:38Z"
+                },
+                {
+                  "key": "service_code",
+                  "value": "3"
+                },
+                {
+                  "key": "page",
+                  "value": "2"
+                },
+                {
+                  "key": "page_size",
+                  "value": "2"
+                }
+              ],
+              "variable": []
+            }
+          }
+        },
+        {
+          "name": "close request",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "http://localhost:8081/close-request?request_id=0",
+              "protocol": "http",
+              "host": [
+                "localhost:8081"
+              ],
+              "path": [
+                "close-request"
+              ],
+              "query": [
+                {
+                  "key": "request_id",
+                  "value": "0"
+                }
+              ],
+              "variable": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Real Endpoints",
+      "item": [
+        {
+          "name": "Boston",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "https://311.boston.gov/open311/v2/requests.json",
+              "protocol": "https",
+              "host": [
+                "311",
+                "boston",
+                "gov"
+              ],
+              "path": [
+                "open311",
+                "v2",
+                "requests.json"
+              ],
+              "query": [
+                {
+                  "key": "service_request_id",
+                  "value": "101006183998,101006183995"
+                },
+                {
+                  "key": "status",
+                  "value": "open"
+                },
+                {
+                  "key": "start_date",
+                  "value": "2025-07-27T06:50:40Z"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2025-07-28T06:50:40Z"
+                },
+                {
+                  "key": "page_size",
+                  "value": "100"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ],
+              "variable": []
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": []
+}
