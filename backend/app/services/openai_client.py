@@ -1,4 +1,5 @@
-from openai import AsyncOpenAI, RateLimitError, BadRequestError
+from openai import AsyncOpenAI
+import openai
 from pathlib import Path
 import asyncio
 import json
@@ -12,10 +13,18 @@ client = AsyncOpenAI(api_key=settings.openai_api_key)
 CLASSIFY_BATCH_PROMPT_PATH = Path(__file__).parents[1] / 'prompts' / 'classify_batch.txt'
 CLASSIFY_BATCH_PROMPT = CLASSIFY_BATCH_PROMPT_PATH.read_text()
 
-import logging
-log = logging.getLogger('uvicorn.error')
+TRANSIENT_ERRORS = (
+    openai.APIConnectionError,
+    openai.APITimeoutError,
+    openai.InternalServerError,
+    openai.RateLimitError
+)
 
-@backoff.on_exception(backoff.expo, RateLimitError)
+@backoff.on_exception(
+    backoff.expo,
+    TRANSIENT_ERRORS,
+    jitter=backoff.full_jitter
+)
 async def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
     model_input = [
         {'role': 'system', 'content': CLASSIFY_BATCH_PROMPT},
@@ -46,7 +55,7 @@ async def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
         )
 
     # handle bad image urls
-    except BadRequestError as e:
+    except openai.BadRequestError as e:
         if e.body['param'] == 'url' and e.body['code'] == 'invalid_value':
             for i in range(len(model_input)):
                 if model_input[i]['role'] == 'system':
