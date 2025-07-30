@@ -1,5 +1,6 @@
 import logging
 import asyncio
+import sys
 from datetime import datetime, timezone, timedelta
 from app.core.config import get_settings
 from app.services.georeport_client import fetch_open_requests
@@ -7,11 +8,17 @@ from app.services.openai_client import classify_batch_in_chunks as classify_batc
 from app.utils.time_helper import format_time
 import app.services.cache as cache
 
-log = logging.getLogger('uvicorn.error')
+logging.basicConfig(
+    stream=sys.stdout,
+    level=logging.INFO
+)
+
+log = logging.getLogger("ingestion")
 settings = get_settings()
 
 async def poll_city(city: str) -> None:
     while True:
+        log.info('hello')
         end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(days=1)
         page = 1

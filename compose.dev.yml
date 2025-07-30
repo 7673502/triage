@@ -7,13 +7,23 @@ services:
       - "8000:8000"
     depends_on:
       - redis
-    environment:
-      - REDIS_HOST=redis
     volumes:
       - ./backend/app:/app/app
     env_file:
       - .dev.env   
     command: poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+  worker:
+    build:
+      context: ./backend
+      target: dev
+    depends_on:
+      - redis
+    volumes:
+      - ./backend/app:/app/app
+    env_file:
+      - .dev.env
+    command: poetry run python -m app.ingest_runner
 
   redis:
     image: "redis:8.0.3-bookworm"
