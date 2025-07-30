@@ -18,7 +18,6 @@ settings = get_settings()
 
 async def poll_city(city: str) -> None:
     while True:
-        log.info('hello')
         end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(days=1)
         page = 1
