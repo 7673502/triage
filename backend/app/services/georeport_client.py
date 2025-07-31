@@ -1,12 +1,18 @@
 import httpx
+import sys
+import logging
 from datetime import datetime
 from app.core.config import get_settings
 from app.utils.time_helper import format_time
 
 settings = get_settings()
 
-import logging
-log = logging.getLogger('uvicorn.error')
+
+logging.basicConfig(
+    stream=sys.stdout,
+    level=logging.INFO
+)
+log = logging.getLogger('georeport-client')
 
 async def fetch_open_requests(
     city: str,

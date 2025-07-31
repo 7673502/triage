@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     redis_url: str = Field('redis://redis:6379/0', env='REDIS_URL')
     poll_interval: int = Field(10, env='POLL_INTERVAL')
     cities: dict[str, str] = Field(..., env='CITIES')
+    models: list[str] = Field(..., env='')
 
     class Config:
         env_file = '.env'
