@@ -6,6 +6,7 @@ Create a `.dev.env` file at the project root with these values:
 OPENAI_API_KEY=[YOUR OPENAI KEY]
 API_KEYS=[COMMA SEPERATED LIST OF API KEYS]
 CITIES={"test" : "http://mock_open311:80"}
+MODELS=["o4-mini", "gpt-4o-mini", "gpt-4.1"]
 ```
 You can optionally add the `REDIS_URL` and `POLL_INTERVAL` if necessary otherwise they will default to `redis://redis:6379/0` and `10`, respectively.
 
@@ -13,6 +14,11 @@ You can optionally add the `REDIS_URL` and `POLL_INTERVAL` if necessary otherwis
 docker-compose -f compose.dev.yml up
 ```
 Use the --build option  if you make changes to the [Dockerfile](backend/Dockerfile) or [pyproject.toml](backend/pyproject.toml).
+
+I'd recommend using [Bruno](https://www.usebruno.com/) if you want to test sending requests using a GUI instead of the command line. Just import the [Postman Collection](PostmanCollection.json) and you'll be set.
+
+## Production
+*work in progress...*
 
 ## Cities List
 These are the endpoints I've found that have particularly rich data
