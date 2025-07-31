@@ -17,6 +17,8 @@ Use the --build option  if you make changes to the [Dockerfile](backend/Dockerfi
 
 I'd recommend using [Bruno](https://www.usebruno.com/) if you want to test sending requests using a GUI instead of the command line. Just import the [Postman Collection](PostmanCollection.json) and you'll be set.
 
+The frontend can be accessed on [port 3000](http://localhost:3000).
+
 ## Production
 *work in progress...*
 
