@@ -16,6 +16,6 @@ app.include_router(requests_router)
 async def ping():
     return {'msg': 'pong'}
 
-@app.get('/available_cities')
+@app.get('/v1/available_cities')
 async def available_cities():
     return {'cities': list(settings.cities.keys())}
