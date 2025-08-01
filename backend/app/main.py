@@ -7,7 +7,7 @@ settings = get_settings()
 
 app = FastAPI(
     title='Triage',
-    dependencies=[Depends(verify_api_key)]
+    #dependencies=[Depends(verify_api_key)]
 )
 
 app.include_router(requests_router)
@@ -18,4 +18,4 @@ async def ping():
 
 @app.get('/v1/available_cities')
 async def available_cities():
-    return {'cities': list(settings.cities.keys())}
+    return list(settings.cities.keys())
