@@ -1,6 +1,7 @@
 import httpx
 import sys
 import logging
+import backoff
 from datetime import datetime
 from app.core.config import get_settings
 from app.utils.time_helper import format_time
@@ -14,6 +15,11 @@ logging.basicConfig(
 )
 log = logging.getLogger('georeport-client')
 
+@backoff.on_exception(
+    backoff.expo,
+    (httpx.RemoteProtocolError,),
+    jitter=backoff.full_jitter
+)
 async def fetch_open_requests(
     city: str,
     *,
