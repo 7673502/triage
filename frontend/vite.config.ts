@@ -8,8 +8,7 @@ export default defineConfig({
     host: true,
     port: 3000,
     proxy: {
-      // Any browser call to /api/* will be proxied to the FastAPI service
-      '/api': {
+      '/v1': {
         target: 'http://fastapi:8000',
         changeOrigin: true,
       },
