@@ -56,3 +56,17 @@ async def mget_requests(city: str) -> list[dict]:
     items = [json.loads(req) for req in raw_reqs if req]
 
     return items
+
+async def get_city_stats(city: str):
+    pipe = redis.pipeline(transaction=False)
+
+    pipe.scard(open_set_key(city)) # number of open requests
+    
+    values = await pipe.execute()
+
+    keys = [
+        'num_open'
+    ]
+
+    return dict(zip(keys, values))
+

@@ -11,3 +11,9 @@ async def get_processed_requests(city: str):
     if city not in settings.cities:
         raise HTTPException(status_code=404, detail='City not found')
     return await cache.mget_requests(city)
+
+@router.get('/{city}/quick_stats')
+async def get_quick_stats(city: str):
+    if city not in settings.cities:
+        raise HTTPException(status_code=404, detail='City not found')
+    return await cache.get_city_stats(city)
