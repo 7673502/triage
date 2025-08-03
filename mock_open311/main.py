@@ -61,6 +61,7 @@ async def get_requests(
     service_code: str | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
+    status: str | None = None,
     page: int = 1,
     page_size: int = 50
 ):
@@ -78,6 +79,9 @@ async def get_requests(
         if end_date:
             end_dt = parse_time(end_date)
             filtered_db = [i for i in filtered_db if parse_time(i['requested_datetime']) < end_dt]
+        if status:
+            filtered_db = [i for i in filtered_db if i['status'] == status.strip()]
+        
 
     start_index = page_size * (page - 1)
     end_index = page_size * page
