@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, WebSocket
+from fastapi import APIRouter, HTTPException
 from app.core.config import get_settings
 import app.services.cache as cache
 

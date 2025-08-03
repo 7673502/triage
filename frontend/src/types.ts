@@ -1,14 +1,27 @@
 export interface RequestItem {
   service_request_id: string;
-  priority: number;
-  flags: string[];
+  status: string;
+  status_notes?: string;
   service_name?: string;
+  service_code?: string;
   description?: string;
-  address?: string;
-  city?: string;
-  media_url?: string | null;
-  updated_datetime?: string;
+  agency_responsible?: string;
+  service_notice?: string;
   requested_datetime?: string;
+  updated_datetime?: string;
+  expected_datetime?: string;
+  address?: string;
+  address_id?: string;
+  zipcode?: string;
+  lat?: number;
+  long?: number;
+  media_url?: string;
+}
+
+export interface Stats {
+  num_open: number;
+  avg_priority: number;
+  recent_requests: number;
 }
 
 export type CityName = string; 

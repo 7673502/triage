@@ -1,0 +1,28 @@
+.stat-card {
+  flex: 1 1 0;
+  min-width: 140px;
+  padding: 20px 24px;
+  border-radius: 12px;
+  background: #f9fafb;
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-card__value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.stat-card__label {
+  font-size: .875rem;
+  color: #6b7280;
+}
+
+/* accent lozenges */
+.stat-card--red    { border-top: 4px solid #dc2626; }
+.stat-card--yellow { border-top: 4px solid #d97706; }
+.stat-card--green  { border-top: 4px solid #16a34a; }
+.stat-card--slate  { border-top: 4px solid #64748b; }
