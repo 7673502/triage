@@ -77,9 +77,9 @@ async def evict_request(city: str, req_id: str) -> None:
     pipe.zrem(ts_zset_key(city), req_id)
 
     # global updates
-    pipe.decrby(global_priority_sum_key, priority)
-    pipe.decr(global_num_open_key)
-    pipe.zrem(global_ts_zset_key, req_id)
+    pipe.decrby(global_priority_sum_key(), priority)
+    pipe.decr(global_num_open_key())
+    pipe.zrem(global_ts_zset_key(), req_id)
 
     await pipe.execute()
 
