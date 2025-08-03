@@ -6,7 +6,7 @@ Create a `.dev.env` file at the project root with these values:
 OPENAI_API_KEY=[YOUR OPENAI KEY]
 API_KEYS=[COMMA SEPERATED LIST OF API KEYS]
 CITIES={"test" : "http://mock_open311:80"}
-MODELS=["o4-mini", "gpt-4o-mini", "gpt-4.1"]
+MODELS=["o4-mini", "gpt-4.1"]
 ```
 You can optionally add the `REDIS_URL` and `POLL_INTERVAL` if necessary otherwise they will default to `redis://redis:6379/0` and `10`, respectively.
 
@@ -17,12 +17,13 @@ Use the --build option  if you make changes to the [Dockerfile](backend/Dockerfi
 
 I'd recommend using [Bruno](https://www.usebruno.com/) if you want to test sending requests using a GUI instead of the command line. Just import the [Postman Collection](PostmanCollection.json) and you'll be set.
 
-The frontend can be accessed on [port 3000](http://localhost:3000).
+**The frontend can be accessed on [port 3000](http://localhost:3000).**
 
 ## Production
 *work in progress...*
 
-## Cities List
+## Appendix
+### Cities List
 These are the endpoints I've found that have particularly rich data
 
 | City              | Endpoint                                                    |
@@ -32,3 +33,10 @@ These are the endpoints I've found that have particularly rich data
 | Clark County, NV  | https://seeclickfix.com/open311/v2/1375                     |
 | Tucson, AZ        | https://seeclickfix.com/open311/v2/36                       |
 | Detroit, MI       | https://seeclickfix.com/open311/v2/507                      |
+
+### Model Performance
+| Model       | Notes                                            |
+| ----------- | ------------------------------------------------ |
+| gpt-4o-mini | very bad, do not use                             |
+| o4-mini     | works decently                                   |
+| gpt-4.1     | seems to work decently, further testing required |
