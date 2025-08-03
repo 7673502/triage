@@ -1,6 +1,6 @@
 import json
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 import redis.asyncio as redis_client
 from app.core.config import get_settings
 
@@ -88,7 +88,7 @@ async def mget_requests(city: str) -> list[dict]:
     return items
 
 async def get_city_stats(city: str):
-    now = int(datetime.utcnow().timestamp())
+    now = int(datetime.now(timezone.utc).timestamp())
     one_hour_ago = now - ONE_HOUR
 
     pipe = redis.pipeline(transaction=False)
