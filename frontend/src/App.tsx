@@ -1,19 +1,19 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import 'bootstrap/dist/css/bootstrap.min.css';
-import ComplaintCard from './components/ComplaintCard';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Complaints from './pages/Complaints';
+import MapPage from './pages/Map';
+import Insights from './pages/Insights';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return <div>
-    <ComplaintCard />
-    <ComplaintCard />
-    <ComplaintCard />
-    </div>
-
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/complaints" element={<Complaints />} />
+        <Route path="/map" element={<MapPage />} />
+        <Route path="/insights" element={<Insights />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
-
-export default App
