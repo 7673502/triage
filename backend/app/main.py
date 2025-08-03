@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends
 from app.core.config import get_settings
 from app.core.security import verify_api_key
 from app.routers.requests import router as requests_router
+from app.routers.stats import router as stats_router
 
 settings = get_settings()
 
@@ -11,6 +12,7 @@ app = FastAPI(
 )
 
 app.include_router(requests_router)
+app.include_router(stats_router)
 
 @app.get('/ping')
 async def ping():
