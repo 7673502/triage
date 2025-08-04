@@ -1,17 +1,16 @@
-import type { RequestItem } from '../types';
+import { type RequestItem, RequestFlag } from '../types';
 
 interface Props {
   request: RequestItem;
 }
 
-/* pick a colour based on numeric priority */
+/* colour helpers */
 function priorityColor(score: number): string {
   if (score >= 70) return '#dc2626';   // red-600
   if (score >= 30) return '#d97706';   // amber-600
   return '#16a34a';                    // green-600
 }
 
-/* ISO → “YYYY-MM-DD HH:MM” (no seconds) */
 function formatDateTime(iso?: string): string {
   if (!iso) return '';
   const d = new Date(iso);
@@ -19,13 +18,42 @@ function formatDateTime(iso?: string): string {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
-    hour: 'numeric',
+    hour: '2-digit',
     minute: '2-digit',
   });
 }
 
+/* map each flag to a concise pill label & colour  */
+const flagLabel: Record<RequestFlag, string> = {
+  VALID: 'valid',
+  CATEGORY_MISMATCH: 'category mismatch',
+  IMAGE_MISMATCH: 'image mismatch',
+  OVERSTATED_SEVERITY: 'overstated severity',
+  UNCLEAR: 'unclear',
+  DUPLICATE: 'duplicate',
+  SPAM: 'spam',
+  MISSING_INFO: 'missing info',
+  MISCLASSIFIED_LOCATION: 'misclassified location',
+  NON_ISSUE: 'non-issue',
+  OTHER: 'other',
+};
+
+const flagColor: Record<RequestFlag, string> = {
+  VALID: '#16a34a',                     // green
+  CATEGORY_MISMATCH: '#d97706',
+  IMAGE_MISMATCH: '#d97706',
+  OVERSTATED_SEVERITY: '#d97706',
+  UNCLEAR: '#d97706',
+  DUPLICATE: '#dc2626',                 // red-ish
+  SPAM: '#dc2626',
+  MISSING_INFO: '#d97706',
+  MISCLASSIFIED_LOCATION: '#d97706',
+  NON_ISSUE: '#dc2626',
+  OTHER: '#6b7280',                     // gray
+};
+
 export default function ComplaintCard({ request }: Props) {
-  const priority = request.priority ?? 0;            /* backend should supply */
+  const priority = request.priority ?? 0;
   const color = priorityColor(priority);
 
   return (
@@ -40,7 +68,7 @@ export default function ComplaintCard({ request }: Props) {
         background: '#fff',
       }}
     >
-      {/* left coloured square */}
+      {/* coloured priority square */}
       <div
         style={{
           width: 32,
@@ -58,31 +86,48 @@ export default function ComplaintCard({ request }: Props) {
         {priority}
       </div>
 
-      {/* main content */}
+      {/* main column */}
       <div style={{ flex: 1 }}>
-        {/* title (prefer description, fallback service_name) */}
         <h3 style={{ margin: '0 0 4px', fontSize: 16, fontWeight: 600 }}>
           {request.description || request.service_name || 'No title'}
         </h3>
 
-        {/* subtitle row */}
+        {/* address • date */}
         <p style={{ margin: 0, fontSize: 14, color: '#6b7280' }}>
           {request.address && <>{request.address} &bull; </>}
           {formatDateTime(request.requested_datetime)}
         </p>
+
+        {/* flag pills */}
+        {request.flag && request.flag.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+            {request.flag
+            ?.filter((f) => f !== RequestFlag.VALID)
+            .map((f) => (
+              <span
+                key={f}
+                style={{
+                  fontSize: 11,
+                  padding: '2px 6px',
+                  borderRadius: 4,
+                  background: flagColor[f] + '22', /* 13% alpha */
+                  color: flagColor[f],
+                  fontWeight: 500,
+                }}
+              >
+                {flagLabel[f]}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* optional image thumbnail */}
+      {/* optional thumbnail */}
       {request.media_url && (
         <img
           src={request.media_url}
-          alt="request thumbnail"
-          style={{
-            width: 72,
-            height: 72,
-            objectFit: 'cover',
-            borderRadius: 8,
-          }}
+          alt=""
+          style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8 }}
           onError={(e) => (e.currentTarget.style.display = 'none')}
         />
       )}

@@ -1,3 +1,18 @@
+export enum RequestFlag {
+  VALID = 'VALID',
+  CATEGORY_MISMATCH = 'CATEGORY_MISMATCH',
+  IMAGE_MISMATCH = 'IMAGE_MISMATCH',
+  OVERSTATED_SEVERITY = 'OVERSTATED_SEVERITY',
+  UNCLEAR = 'UNCLEAR',
+  DUPLICATE = 'DUPLICATE',
+  SPAM = 'SPAM',
+  MISSING_INFO = 'MISSING_INFO',
+  MISCLASSIFIED_LOCATION = 'MISCLASSIFIED_LOCATION',
+  NON_ISSUE = 'NON_ISSUE',
+  OTHER = 'OTHER',
+}
+
+
 export interface RequestItem {
   service_request_id: string;
   status: string;
@@ -17,7 +32,7 @@ export interface RequestItem {
   long?: number;
   media_url?: string;
   priority: number;
-  flag: string[];
+  flag?: RequestFlag[];
 }
 
 export interface Stats {
