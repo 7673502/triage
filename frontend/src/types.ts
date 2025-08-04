@@ -16,6 +16,8 @@ export interface RequestItem {
   lat?: number;
   long?: number;
   media_url?: string;
+  priority: number;
+  flag: string[];
 }
 
 export interface Stats {

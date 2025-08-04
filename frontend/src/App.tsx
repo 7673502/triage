@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Complaints from './pages/Complaints';
@@ -7,16 +7,14 @@ import Insights from './pages/Insights';
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/complaints" element={<Complaints />} />
-          <Route path="/map" element={<MapPage />} />
-          <Route path="/insights" element={<Insights />} />
-        </Route>   
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/complaints" element={<Complaints />} />
+        <Route path="/map" element={<MapPage />} />
+        <Route path="/insights" element={<Insights />} />
+      </Route>   
+    </Routes>
   );
 }
