@@ -1,24 +1,23 @@
-/* NAVBAR ──────────────────────────────────────────────────────────────── */
-
+/* ───────── base tokens ───────── */
 :root {
   --nav-height: 56px;
   --color-gray-500: #6b7280;
   --color-gray-800: #1f2937;
 }
 
-/* bar */
+/* ───────── bar layout ───────── */
 .nav {
   position: fixed;
   inset: 0 0 auto 0;
-  z-index: 20;
+  z-index: 30;
   display: flex;
   align-items: center;
   height: var(--nav-height);
   padding-inline: 24px;
   background: #fff;
   border-bottom: 1px solid #e5e7eb;
-  overflow: visible;                 /* ⋆ allow absolute links to protrude */
-  position: relative;                /* ⋆ establish containing block */
+  position: relative;
+  overflow: visible;
 }
 
 /* brand block */
@@ -29,31 +28,21 @@
   flex-shrink: 0;
 }
 
-.logo-square {
-  width: 24px;
-  height: 24px;
-  background: #111;
-}
+.logo-square { width: 24px; height: 24px; background:#111; }
+.brand-text  { font-weight:600; font-size:1.25rem; }
 
-.brand-text {
-  font-weight: 600;
-  font-size: 1.25rem;
-}
-
-/* centred link row */
+/* ───────── desktop link row (absolute centred) ───────── */
 .nav__links {
-  /* ⋆ Take out of flex flow and pin to nav centre */
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: 32px;
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
-/* individual link */
 .nav-link {
   position: relative;
   display: flex;
@@ -62,9 +51,8 @@
   padding-inline: 16px;
   font-weight: 500;
   color: var(--color-gray-500);
-  transition: color 0.15s;
+  transition: color .15s;
 }
-
 .nav-link:hover   { color: var(--color-gray-800); }
 .nav-link--active { color: var(--color-gray-800); }
 
@@ -79,13 +67,58 @@
   border-radius: 1px;
 }
 
-/* MAIN OFFSET ───────────────────────────────────────────────────────────*/
-body,
-#root {
-  height: 100%;
+/* hide desktop links on narrower screens */
+@media (max-width: 1000px) {
+  .nav__links { display: none; }
 }
 
-main {
-  padding: 24px;
-  padding-top: calc(var(--nav-height) + 24px);
+/* ───────── hamburger button ───────── */
+.nav__hamburger {
+  display: none;                     /* default hidden */
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
 }
+.bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  margin: 4px 0;
+  background: #1f2937;
+}
+
+@media (max-width: 1000px) {
+  .nav__hamburger { display: block; margin-left: auto; }
+}
+
+/* ───────── mobile drawer ───────── */
+.nav__drawer {
+  position: absolute;
+  top: var(--nav-height);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav__drawer.show { display: flex; }
+
+.drawer-link {
+  display: block;
+  padding: 10px 24px;
+  color: var(--color-gray-800);
+  text-decoration: none;
+  font-weight: 500;
+}
+.drawer-link:hover        { background: #f3f4f6; }
+.drawer-link--active      { background: #e0e7ff; }
+
+/* ───────── main offset ───────── */
+body, #root { height: 100%; }
+main { padding: 24px; padding-top: calc(var(--nav-height) + 24px); }
