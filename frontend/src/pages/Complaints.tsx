@@ -75,7 +75,7 @@ export default function Complaints() {
         onOrder={(k) => setOrder(k)}
         onReverse={() => setRev((r) => !r)}
       />
-
+      
       <section
         style={{
           display: 'flex',
@@ -85,6 +85,7 @@ export default function Complaints() {
           margin: '0 auto',
         }}
       >
+        <p style={{margin: 1}}>{processed.length} results</p>
         {slice.map((req) => (
           <ComplaintCard key={req.service_request_id} request={req} />
         ))}
