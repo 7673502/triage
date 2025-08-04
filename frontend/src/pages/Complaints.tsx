@@ -1,8 +1,9 @@
+import { useEffect, useState } from 'react';
 import ComplaintCard from '../components/ComplaintCard';
 import Paginator from '../components/Paginator';
+import FilterBar from '../components/FilterBar';          /* ← NEW */
 import useCityRequests from '../hooks/useCityRequests';
 import { useCity } from '../CityContext';
-import { useState, useEffect } from 'react';
 
 const PAGE_SIZE = 20;
 
@@ -11,12 +12,10 @@ export default function Complaints() {
   const { items, loading, error } = useCityRequests();
   const [page, setPage] = useState(0);
 
-  /* reset to first page when the city changes */
   useEffect(() => setPage(0), [city]);
 
   if (city === null)
     return <p style={{ textAlign: 'center', paddingTop: 80 }}>Pick a city to view complaints</p>;
-
   if (loading) return <p style={{ textAlign: 'center', paddingTop: 80 }}>Loading…</p>;
   if (error)   return <p style={{ textAlign: 'center', paddingTop: 80 }}>🚨 {error}</p>;
 
@@ -26,6 +25,10 @@ export default function Complaints() {
 
   return (
     <>
+      {/* NEW filter bar (handlers stubbed for now) */}
+      <FilterBar />
+
+      {/* list */}
       <section
         style={{
           display: 'flex',
@@ -40,6 +43,7 @@ export default function Complaints() {
         ))}
       </section>
 
+      {/* paginator */}
       {pageCount > 1 && (
         <Paginator pageCount={pageCount} current={page} onPage={setPage} />
       )}
