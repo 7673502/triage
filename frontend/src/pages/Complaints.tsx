@@ -8,22 +8,23 @@ import { useCity } from '../CityContext';
 const PAGE_SIZE = 20;
 
 export default function Complaints() {
-  const { city }           = useCity();
+  const { city } = useCity();
   const { items, loading, error } = useCityRequests();
 
-  /* filter state */
-  const [query, setQuery]   = useState('');
-  const [order, setOrder]   = useState<OrderKey>('priority');
-  const [reverse, setRev]   = useState(false);
-  const [page, setPage]     = useState(0);
+  /* ---------- state ---------- */
+  const [query, setQuery] = useState('');
+  const [order, setOrder] = useState<OrderKey>('date'); /* default date */
+  const [reverse, setRev] = useState(false);            /* default newest→oldest */
+  const [page, setPage] = useState(0);
 
-  /* reset page when filters change */
+  /* reset page when filters OR city change */
   useEffect(() => setPage(0), [city, query, order, reverse]);
 
-  /* ---------- derived list (search + sort) ---------- */
+  /* ---------- derived list ---------- */
   const processed = useMemo(() => {
-    /* text filter */
     const q = query.trim().toLowerCase();
+
+    /* text filter */
     let arr = q
       ? items.filter((it) => {
           const hay =
@@ -34,19 +35,19 @@ export default function Complaints() {
             (it.service_name || '');
           return hay.toLowerCase().includes(q);
         })
-      : items.slice();
+      : [...items];
 
-    /* sort */
+    /* sort by order key */
     arr.sort((a, b) => {
       if (order === 'priority') {
         const pa = a.priority ?? 0;
         const pb = b.priority ?? 0;
-        return pa - pb;
+        return pa - pb;                         // low → high
       } else {
-        /* date newest first by default */
+        /* date: newest first by default */
         const da = new Date(a.requested_datetime ?? 0).getTime();
         const db = new Date(b.requested_datetime ?? 0).getTime();
-        return da - db;
+        return db - da;                         // newest → oldest
       }
     });
 
@@ -54,12 +55,12 @@ export default function Complaints() {
     return arr;
   }, [items, query, order, reverse]);
 
-  /* paginate */
+  /* ---------- pagination ---------- */
   const start     = page * PAGE_SIZE;
   const pageCount = Math.ceil(processed.length / PAGE_SIZE);
   const slice     = processed.slice(start, start + PAGE_SIZE);
 
-  /* ---------- early states ---------- */
+  /* ---------- early-return states ---------- */
   if (city === null)
     return <p style={{ textAlign: 'center', paddingTop: 80 }}>Pick a city to view complaints</p>;
   if (loading) return <p style={{ textAlign: 'center', paddingTop: 80 }}>Loading…</p>;
@@ -69,11 +70,12 @@ export default function Complaints() {
   return (
     <>
       <FilterBar
+        value={order}     
         onSearch={setQuery}
-        onOrder={setOrder}
+        onOrder={(k) => setOrder(k)}
         onReverse={() => setRev((r) => !r)}
       />
-
+      
       <section
         style={{
           display: 'flex',
@@ -83,6 +85,7 @@ export default function Complaints() {
           margin: '0 auto',
         }}
       >
+        <p style={{margin: 1}}>{processed.length} results</p>
         {slice.map((req) => (
           <ComplaintCard key={req.service_request_id} request={req} />
         ))}

@@ -1,7 +1,7 @@
 /* ────────── Global base tokens ────────── */
 :root {
   /* Typography */
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Public Sans", system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
