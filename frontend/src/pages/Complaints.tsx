@@ -64,7 +64,7 @@ export default function Complaints() {
   if (city === null)
     return <p style={{ textAlign: 'center', paddingTop: 80 }}>Pick a city to view complaints</p>;
   if (loading) return <p style={{ textAlign: 'center', paddingTop: 80 }}>Loading…</p>;
-  if (error)   return <p style={{ textAlign: 'center', paddingTop: 80 }}>🚨 {error}</p>;
+  if (error)   return <p style={{ textAlign: 'center', paddingTop: 80 }}>{error}</p>;
 
   /* ---------- render ---------- */
   return (
