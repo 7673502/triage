@@ -25,7 +25,7 @@ Modifiers:
 - If the image lacks clear context, assume PUBLIC USE AREA only if it shows pavement, benches, painted lines, or similar features; otherwise assume LOW TRAFFIC AREA
 - If image shows no visible hazard, cap priority at 40
 
-Use your judgment to assign a final float score based on impact type, urgency, and location.
+Use your judgment to assign a final score based on impact type, urgency, and location.
 
 
 CONTEXT HEURISTIC (overrides above)
@@ -74,7 +74,17 @@ OUTPUT LIMITS
 - priority_explanation ≤ 15 words
 - flag_explanation     ≤ 15 words (empty when flag = OK)
 
-You will receive multiple user messages. Each user message is one 311 service request:
+
+ISSUE TAGGING
+for the issue tag, output a brief 2-3 word description of the issue. This should relate closely to the description and service type of the complaint.
+Examples:
+- "pothole"
+- "tree fallen down"
+- "illegal dumping"
+These are 3 of many possible examples.
+
+
+You will receive one or more user messages. Each user message is one 311 service request:
 - First part: compact JSON with request metadata
 - Following parts: zero or more images
 For each user message, produce one ClassifiedRequest in the output list.

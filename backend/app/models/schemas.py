@@ -6,6 +6,7 @@ class ClassifiedPayload(BaseModel):
     flag: list[RequestFlag]
     priority_explanation: str
     flag_explanation: str
+    incident_label: str
 
 class ClassifiedResponse(BaseModel):
     id: str
