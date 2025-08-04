@@ -1,4 +1,4 @@
-/* NAVBAR */
+/* NAVBAR ──────────────────────────────────────────────────────────────── */
 
 :root {
   --nav-height: 56px;
@@ -6,24 +6,27 @@
   --color-gray-800: #1f2937;
 }
 
+/* bar */
 .nav {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  inset: 0 0 auto 0;
   z-index: 20;
   display: flex;
   align-items: center;
   height: var(--nav-height);
-  padding: 0 24px;
+  padding-inline: 24px;
   background: #fff;
   border-bottom: 1px solid #e5e7eb;
+  overflow: visible;                 /* ⋆ allow absolute links to protrude */
+  position: relative;                /* ⋆ establish containing block */
 }
 
+/* brand block */
 .nav__brand {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .logo-square {
@@ -37,23 +40,29 @@
   font-size: 1.25rem;
 }
 
+/* centred link row */
 .nav__links {
+  /* ⋆ Take out of flex flow and pin to nav centre */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  list-style: none;
   gap: 32px;
-  margin: 0 auto;
+  list-style: none;
   padding: 0;
+  margin: 0;
 }
 
+/* individual link */
 .nav-link {
   position: relative;
   display: flex;
   align-items: center;
   height: var(--nav-height);
-  padding: 0 16px;
+  padding-inline: 16px;
   font-weight: 500;
   color: var(--color-gray-500);
-  transition: color .15s;
+  transition: color 0.15s;
 }
 
 .nav-link:hover   { color: var(--color-gray-800); }
@@ -70,8 +79,9 @@
   border-radius: 1px;
 }
 
-/* MAIN OFFSET */
-body, #root {
+/* MAIN OFFSET ───────────────────────────────────────────────────────────*/
+body,
+#root {
   height: 100%;
 }
 

@@ -1,38 +1,27 @@
-import { useEffect, useState } from 'react';
 import ComplaintCard from '../components/ComplaintCard';
 import Paginator from '../components/Paginator';
-import { fetchRequestsByCity } from '../api';
-import type { RequestItem } from '../types';
+import useCityRequests from '../hooks/useCityRequests';
+import { useCity } from '../CityContext';
+import { useState, useEffect } from 'react';
 
-const DEFAULT_CITY = 'boston';
 const PAGE_SIZE = 20;
 
 export default function Complaints() {
-  const [items, setItems] = useState<RequestItem[]>([]);
-  const [page, setPage]   = useState(0);          // zero-based page index
-  const [loading, setLoad]  = useState(true);
-  const [error, setError]   = useState<string | null>(null);
+  const { city } = useCity();
+  const { items, loading, error } = useCityRequests();
+  const [page, setPage] = useState(0);
 
-  useEffect(() => {
-    const ctrl = new AbortController();
-    fetchRequestsByCity(DEFAULT_CITY, ctrl.signal)
-      .then((data) => {
-        setItems(data);
-        setPage(0);                // reset to first page on new fetch
-      })
-      .catch((e) => {
-        if (e.name !== 'AbortError') setError(e.message);
-      })
-      .finally(() => setLoad(false));
-    return () => ctrl.abort();
-  }, []);
+  /* reset to first page when the city changes */
+  useEffect(() => setPage(0), [city]);
+
+  if (city === null)
+    return <p style={{ textAlign: 'center', paddingTop: 80 }}>Pick a city to view complaints</p>;
 
   if (loading) return <p style={{ textAlign: 'center', paddingTop: 80 }}>Loading…</p>;
   if (error)   return <p style={{ textAlign: 'center', paddingTop: 80 }}>🚨 {error}</p>;
 
-  /* pagination slice */
   const start = page * PAGE_SIZE;
-  const currentPageItems = items.slice(start, start + PAGE_SIZE);
+  const current = items.slice(start, start + PAGE_SIZE);
   const pageCount = Math.ceil(items.length / PAGE_SIZE);
 
   return (
@@ -46,18 +35,13 @@ export default function Complaints() {
           margin: '0 auto',
         }}
       >
-        {currentPageItems.map((req) => (
+        {current.map((req) => (
           <ComplaintCard key={req.service_request_id} request={req} />
         ))}
       </section>
 
-      {/* paginator */}
       {pageCount > 1 && (
-        <Paginator
-          pageCount={pageCount}
-          current={page}
-          onPage={setPage}
-        />
+        <Paginator pageCount={pageCount} current={page} onPage={setPage} />
       )}
     </>
   );
