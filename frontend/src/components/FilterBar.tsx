@@ -8,11 +8,12 @@ interface Props {
   onSearch?: (v: string) => void;
   onOrder?: (k: OrderKey) => void;
   onReverse?: () => void;
+  value: OrderKey;     
 }
 
 const orderOpts = [
-  { value: 'priority', label: 'Priority' },
   { value: 'date',     label: 'Date' },
+  { value: 'priority', label: 'Priority' },
 ];
 
 /* custom “Sort by: …” renderer */
@@ -23,7 +24,7 @@ const SingleValue = (props: any) => (
   </components.SingleValue>
 );
 
-export default function FilterBar({ onSearch, onOrder, onReverse }: Props) {
+export default function FilterBar({ value, onSearch, onOrder, onReverse }: Props) {
   const [search, setSearch] = useState('');
 
   return (
@@ -42,7 +43,7 @@ export default function FilterBar({ onSearch, onOrder, onReverse }: Props) {
       <Select
         className="filter-bar__select"
         options={orderOpts}
-        defaultValue={orderOpts[0]}
+        value={orderOpts.find((o) => o.value === value)}
         onChange={(opt) => onOrder?.(opt?.value as OrderKey)}
         isSearchable={false}
         unstyled
