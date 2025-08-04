@@ -1,0 +1,115 @@
+/* wrapper */
+.pager-wrapper {
+  margin: 32px 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* UL */
+.pager {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* generic LI box */
+.pager__item {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+  display: flex;
+}
+
+/* clickable area */
+.pager__link,
+.pager__gap > button {
+  padding: 6px 10px;
+  font-size: 14px;
+  color: #1f2937;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.pager__link:hover,
+.pager__gap > button:hover {
+  background: #f3f4f6;
+}
+
+.pager__item--active .pager__link {
+  background: #4f46e5;
+  color: #fff;
+  cursor: default;
+}
+
+.pager__arrow .pager__link {
+  padding: 6px 12px;
+}
+
+.pager__item--disabled .pager__link {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* gap / input styling */
+.pager__gap input {
+  width: 48px;
+  padding: 4px 6px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* hide outline on buttons */
+button:focus {
+  outline: none;
+}
+
+/* round the blue active box */
+.pager__item--active .pager__link {
+  border-radius: 6px;   /* same as LI */
+}
+
+/* remove spinner arrows on the jump-to input */
+.pager__gap input {
+  appearance: textfield;           /* Chrome, Safari */
+  -moz-appearance: textfield;      /* Firefox */
+}
+
+.pager__gap input::-webkit-inner-spin-button,
+.pager__gap input::-webkit-outer-spin-button {
+  appearance: none;                /* Chrome */
+  margin: 0;
+}
+
+.pager__gap input:focus-visible {
+  outline: 2px solid #4f46e5;  /* same colour you use for the active page */
+  outline-offset: -2px;        /* pull it inward by its own thickness */
+}
+
+/* input fills the existing box, no extra border */
+.pager__gap input {
+  width: 100%;
+  height: 100%;
+  border: none;                 /* use the li’s border */
+  border-radius: 6px;           /* inherit rounded corners */
+  text-align: center;
+  font-size: 14px;
+  padding: 4px 0;               /* keep text vertically centred */
+  box-sizing: border-box;
+}
+
+/* remove default outline and draw a custom one that matches the box */
+.pager__gap input:focus {
+  outline: none;                            /* kill native outline */
+  box-shadow: 0 0 0 2px #4f46e5 inset;      /* 2-px inner ring, same indigo you use for active page */
+}
+
+/* optional: hover state to match other boxes */
+.pager__gap input:hover:not(:focus) {
+  background: #f3f4f6;
+}
+

@@ -2,6 +2,7 @@ import httpx
 import sys
 import logging
 import backoff
+import asyncio
 from datetime import datetime
 from app.core.config import get_settings
 from app.utils.time_helper import format_time
@@ -17,7 +18,7 @@ log = logging.getLogger('georeport-client')
 
 @backoff.on_exception(
     backoff.expo,
-    (httpx.RemoteProtocolError,),
+    (httpx.HTTPStatusError, httpx.RemoteProtocolError,),
     jitter=backoff.full_jitter
 )
 async def fetch_open_requests(
@@ -47,6 +48,13 @@ async def fetch_open_requests(
         response.raise_for_status()
         try:
             return response.json()
+        
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 429:
+                await asyncio.sleep(60)
+                raise
+            raise
+
         except Exception as e:
             log.info(f"JSON decode error: {e}, body: {response.text}")
             return []

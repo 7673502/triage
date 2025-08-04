@@ -1,0 +1,48 @@
+/* container */
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 16px auto 24px;
+  max-width: 800px;
+}
+
+/* search */
+.filter-bar__search {
+  flex: 1;
+  min-width: 160px;
+  padding: 7px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* orderby’s outer div inherits size from react-select */
+.orderby__control { width: 150px; }
+
+.filter-bar__reverse {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  /* ↓ add these two lines to guarantee centring on wide screens */
+  display: flex;               /* flex box centres the glyph */
+  justify-content: center;     /* horizontal centre */
+  align-items: center;         /* vertical centre */
+}
+
+.filter-bar__reverse:hover { background:#f3f4f6; }
+
+/* ─── mobile stack ─── */
+@media (max-width: 600px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .orderby__control { width: 100%; }
+  .filter-bar__reverse { width: 100%; }
+}
