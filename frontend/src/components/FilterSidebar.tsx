@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Slider from 'rc-slider';
 import Select from 'react-select';
 import 'rc-slider/assets/index.css';
@@ -30,6 +30,8 @@ interface Props {
   mobileOpen: boolean;
   closeMobile: () => void;
   onRequestIds: (ids: string[]) => void; // ← NEW
+  onClearAll: () => void;
+  resetSignal: number;
 }
 
 export default function FilterSidebar({
@@ -40,7 +42,9 @@ export default function FilterSidebar({
   onDateRange,
   mobileOpen,
   closeMobile,
-  onRequestIds
+  onRequestIds,
+  onClearAll,
+  resetSignal
 }: Props) {
   /* local state */
   const [priority, setPriority] = useState<[number, number]>([0, 100]);
@@ -55,6 +59,13 @@ export default function FilterSidebar({
     onRequestIds(ids);
   };
 
+  useEffect(() => {
+  setPriority([0, 100]);
+  setFlagSet(new Set());
+  setFrom('');
+  setTo('');
+  setRequestIds([]);
+}, [resetSignal]);
 
   /* react-select opts built once */
   const svcOpts = useMemo(
@@ -218,6 +229,23 @@ export default function FilterSidebar({
           onDateRange(from || null, e.target.value || null);
         }}
       />
+
+      <button
+  style={{
+    marginTop: 20,
+    width: '100%',
+    padding: '8px 12px',
+    border: '1px solid #d1d5db',
+    borderRadius: 6,
+    background: '#fef2f2',
+    color: '#b91c1c',
+    fontWeight: 600,
+    cursor: 'pointer',
+  }}
+  onClick={onClearAll}
+>
+  Clear All Filters
+</button>
     </aside>
   );
 }

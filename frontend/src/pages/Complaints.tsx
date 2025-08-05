@@ -29,6 +29,18 @@ export default function Complaints() {
   /* mobile drawer */
   const [drawer, setDrawer] = useState(false);
 
+  const [resetSignal, setResetSignal] = useState(0);
+
+  const clearAllFilters = () => {
+    setPrio([0, 100]);
+    setFlags([]);
+    setServices([]);
+    setFrom(null);
+    setTo(null);
+    setRequestIds([]);
+    setResetSignal((r) => r + 1); // 🚨 increment to trigger reset in child
+  };
+
 useEffect(() => {
   if (drawer) {
     const prev = document.body.style.overflow;
@@ -161,6 +173,8 @@ return (
   onRequestIds={setRequestIds}
   mobileOpen={drawer}
   closeMobile={() => setDrawer(false)}
+  onClearAll={clearAllFilters} 
+  resetSignal={resetSignal}
 />
 
       {/* right: main content column */}
