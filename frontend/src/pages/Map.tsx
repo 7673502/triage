@@ -235,7 +235,7 @@ return (
       transform: none !important;
       border-radius: 0 !important;
       border-right: 1px solid #e5e7eb;
-      width: 260px;
+      width: 300px;
       height: 100%;
       overflow-y: auto;
       box-sizing: border-box;
