@@ -25,6 +25,10 @@ export default function CitySwitcher() {
         ];
         setOpts(items);
       })
+      .catch((err) => {
+        if (err.name === 'AbortError') return; // silently ignore
+        console.error('Failed to fetch cities:', err);
+      })
       .finally(() => setLoading(false));
     return () => ctrl.abort();
   }, []);
