@@ -95,7 +95,8 @@ export default function ComplaintCard({ request }: Props) {
         {/* address • date */}
         <p style={{ margin: 0, fontSize: 14, color: '#6b7280' }}>
           {request.address && <>{request.address} &bull; </>}
-          {formatDateTime(request.requested_datetime)}
+          {formatDateTime(request.requested_datetime) && <>{formatDateTime(request.requested_datetime)} &bull; </>}
+          {request.service_request_id}
         </p>
 
         {/* flag pills */}
