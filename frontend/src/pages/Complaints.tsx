@@ -189,7 +189,7 @@ return (
 >
   Filters
 </button>
-<p style={{marginTop: '-10px'}}>{processed.length} results</p>
+<p style={{marginTop: '-10px', marginLeft: '10px'}}>{processed.length} results</p>
 
         {/* results */}
         <section
