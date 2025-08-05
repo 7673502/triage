@@ -24,6 +24,7 @@ export default function Complaints() {
   const [services, setServices] = useState<string[]>([]);
   const [from, setFrom] = useState<string | null>(null);
   const [to, setTo] = useState<string | null>(null);
+  const [requestIds, setRequestIds] = useState<string[]>([]);
 
   /* mobile drawer */
   const [drawer, setDrawer] = useState(false);
@@ -53,35 +54,43 @@ useEffect(() => {
 
   /* ------- list derive ------- */
   const processed = useMemo(() => {
-    let arr = items.filter((it) => {
-      /* priority range */
-      if (it.priority < prio[0] || it.priority > prio[1]) return false;
+   let arr = items.filter((it) => {
+  /* request ID filter */
+  if (
+  requestIds.length > 0 &&
+  !requestIds.includes(String(it.service_request_id))
+) return false;
 
-      /* flags include */
-      if (flags.length) {
-        if (!it.flag || !it.flag.some((f) => flags.includes(f))) return false;
-      }
+  /* priority range */
+  if (it.priority < prio[0] || it.priority > prio[1]) return false;
 
-      /* service names */
-      if (services.length && !services.includes(it.service_name || '')) return false;
+  /* flags include */
+  if (flags.length) {
+    if (!it.flag || !it.flag.some((f) => flags.includes(f))) return false;
+  }
 
-      /* date range */
-      const ts = new Date(it.requested_datetime ?? 0).getTime();
-      if (from && ts < new Date(from).getTime()) return false;
-      if (to && ts > new Date(to).getTime()) return false;
+  /* service names */
+  if (services.length && !services.includes(it.service_name || '')) return false;
 
-      /* search query */
-      if (query.trim()) {
-        const hay =
-          (it.description || '') +
-          ' ' +
-          (it.address || '') +
-          ' ' +
-          (it.service_name || '');
-        if (!hay.toLowerCase().includes(query.trim().toLowerCase())) return false;
-      }
-      return true;
-    });
+  /* date range */
+  const ts = new Date(it.requested_datetime ?? 0).getTime();
+  if (from && ts < new Date(from).getTime()) return false;
+  if (to && ts > new Date(to).getTime()) return false;
+
+  /* search query */
+  if (query.trim()) {
+    const hay =
+      (it.description || '') +
+      ' ' +
+      (it.address || '') +
+      ' ' +
+      (it.service_name || '');
+    if (!hay.toLowerCase().includes(query.trim().toLowerCase())) return false;
+  }
+
+  return true;
+});
+
 
     /* sort */
     arr.sort((a, b) => {
@@ -91,11 +100,11 @@ useEffect(() => {
     });
     if (reverse) arr.reverse();
     return arr;
-  }, [items, query, prio, flags, services, from, to, order, reverse]);
+  }, [items, query, prio, flags, services, from, to, order, reverse, requestIds]);
 
   /* pagination */
   const [page, setPage] = useState(0);
-  useEffect(() => setPage(0), [city, query, prio, flags, services, from, to, order, reverse]);
+  useEffect(() => setPage(0), [city, query, prio, flags, services, from, to, order, reverse, requestIds]);
 
   const pageCount = Math.ceil(processed.length / PAGE_SIZE);
   const slice = processed.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
@@ -143,15 +152,16 @@ return (
       }}
     >
       {/* left: filter rail / drawer */}
-      <FilterSidebar
-        services={distinctServices}
-        onPriority={setPrio}
-        onFlags={setFlags}
-        onServices={setServices}
-        onDateRange={(f, t) => { setFrom(f); setTo(t) }}
-        mobileOpen={drawer}
-        closeMobile={() => setDrawer(false)}
-      />
+<FilterSidebar
+  services={distinctServices}
+  onPriority={setPrio}
+  onFlags={setFlags}
+  onServices={setServices}
+  onDateRange={(f, t) => { setFrom(f); setTo(t) }}
+  onRequestIds={setRequestIds}
+  mobileOpen={drawer}
+  closeMobile={() => setDrawer(false)}
+/>
 
       {/* right: main content column */}
       <div style={{ flex: 1, maxWidth: 800 }}>

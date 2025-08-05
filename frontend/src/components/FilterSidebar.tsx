@@ -40,6 +40,7 @@ export default function FilterSidebar({
   onDateRange,
   mobileOpen,
   closeMobile,
+  onRequestIds
 }: Props) {
   /* local state */
   const [priority, setPriority] = useState<[number, number]>([0, 100]);
@@ -49,6 +50,7 @@ export default function FilterSidebar({
   const [requestIds, setRequestIds] = useState<string[]>([]);
 
   const updateRequestIds = (ids: string[]) => {
+    console.log('Sidebar sees IDs:', ids);
     setRequestIds(ids);
     onRequestIds(ids);
   };

@@ -22,7 +22,14 @@ export default function useCityRequests() {
     }
 
     fetchRequestsByCity(city, ctrl.signal)
-      .then(setItems)
+      .then((raw) =>
+        setItems(
+          raw.map((r) => ({
+            ...r,
+            service_request_id: String(r.service_request_id),
+          }))
+        )
+      )
       .catch((e) => {
         if (e.name !== 'AbortError') setError(e.message);
       })
