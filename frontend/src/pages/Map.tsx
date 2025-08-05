@@ -49,7 +49,7 @@ export default function MapPage() {
     strokeWeight: 1,
     strokeColor: "#111",
     scale: 1.4,
-    anchor: { x: 12, y: 22 },
+    anchor: new google.maps.Point(12, 22),
   });
 
   // InfoWindow data
@@ -155,7 +155,8 @@ return (
         >
           <MarkerClusterer>
             {(clusterer) =>
-              complaints.filter(c => c.lat && c.long).map((c) => (
+              <>
+              {complaints.filter(c => c.lat && c.long).map((c) => (
                 <Marker
                   key={c.service_request_id}
                   position={{ lat: c.lat!, lng: c.long! }}
@@ -163,7 +164,8 @@ return (
                   icon={pinSvg(getPinColor(c.priority))}
                   onClick={() => setActiveId(c.service_request_id)}
                 />
-              ))
+              ))}
+              </>
             }
           </MarkerClusterer>
 
