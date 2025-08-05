@@ -120,22 +120,20 @@ export default function MapPage() {
               onCloseClick={() => setActiveId(null)}
             >
               <div style={{ minWidth: 200, maxWidth: 300 }}>
+                
                 <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 6 }}>
-                  {activeComplaint.incident_label ?? "No label"}
-                </div>
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4
-                }}>
                   <span style={{
-                    width: 18, height: 18, display: 'inline-block', borderRadius: 4,
+                    width: 18, height: 18, display: 'inline-block', borderRadius: 4, marginRight: 8,
                     background: getPinColor(activeComplaint.priority),
                     fontWeight: 600, color: '#fff', textAlign: 'center', lineHeight: '18px', fontSize: 13
                   }}>
                     {activeComplaint.priority}
                   </span>
-                  <span style={{ fontSize: 13, color: '#374151' }}>
-                    Priority
-                  </span>
+                  {activeComplaint.incident_label ?? "No label"}
+                </div>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4
+                }}>
                 </div>
                 {activeComplaint.media_url && (
                 <img
@@ -152,6 +150,7 @@ export default function MapPage() {
                   }}
                 />
                 )}
+                <p>ID: {activeComplaint.service_request_id}</p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
                   {activeComplaint.flag && activeComplaint.flag.filter(f => f !== 'VALID').map(f =>
                     <span key={f} style={{
