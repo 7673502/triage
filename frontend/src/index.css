@@ -85,3 +85,25 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   -webkit-appearance: auto;
   cursor: pointer;
 }
+
+.filterbar-wrapper {
+  padding: 0;
+  margin-bottom: 16px; /* default for mobile */
+}
+
+@media (min-width: 901px) {
+  .filterbar-wrapper {
+    padding: 0;
+    margin-bottom: 24px; /* desktop only */
+  }
+}
+
+.main-wrapper {
+  gap: 0; /* Mobile default */
+}
+
+@media (min-width: 901px) {
+  .main-wrapper {
+    gap: 24px;
+  }
+}

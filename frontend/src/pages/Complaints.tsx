@@ -156,26 +156,32 @@ return (
 
     {/* two-column wrapper */}
     <div
+      className="main-wrapper"
       style={{
         display: 'flex',
-        alignItems: 'flex-start',   // ← align tops
-        gap: 24,
-        paddingTop: 24,             // optional spacing under navbar
+        alignItems: 'flex-start',
+        paddingTop: 24,
+        paddingLeft: 16,
+        paddingRight: 16,
+        boxSizing: 'border-box',
+        width: '100%',
       }}
     >
       {/* left: filter rail / drawer */}
-<FilterSidebar
-  services={distinctServices}
-  onPriority={setPrio}
-  onFlags={setFlags}
-  onServices={setServices}
-  onDateRange={(f, t) => { setFrom(f); setTo(t) }}
-  onRequestIds={setRequestIds}
-  mobileOpen={drawer}
-  closeMobile={() => setDrawer(false)}
-  onClearAll={clearAllFilters} 
-  resetSignal={resetSignal}
-/>
+      <div className="filterbar-wrapper">
+        <FilterSidebar
+          services={distinctServices}
+          onPriority={setPrio}
+          onFlags={setFlags}
+          onServices={setServices}
+          onDateRange={(f, t) => { setFrom(f); setTo(t) }}
+          onRequestIds={setRequestIds}
+          mobileOpen={drawer}
+          closeMobile={() => setDrawer(false)}
+          onClearAll={clearAllFilters} 
+          resetSignal={resetSignal}
+        />
+      </div>
 
       {/* right: main content column */}
       <div style={{ flex: 1, maxWidth: 800 }}>
