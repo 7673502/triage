@@ -91,7 +91,6 @@ export default function FilterSidebar({
     <input
       type="checkbox"
       checked={flagSet.size === allFlags.length}
-      indeterminate={flagSet.size > 0 && flagSet.size < allFlags.length} // for completeness; but see note below
       onChange={() => {
         if (flagSet.size === allFlags.length) {
           setFlagSet(new Set());
