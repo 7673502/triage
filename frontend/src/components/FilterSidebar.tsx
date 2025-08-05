@@ -3,6 +3,7 @@ import Slider from 'rc-slider';
 import Select from 'react-select';
 import 'rc-slider/assets/index.css';
 import './FilterSidebar.css';
+import MultiIdInput from './MultiIdInput';
 import { RequestFlag } from '../types';
 
 /* ---------- helpers ---------- */
@@ -28,6 +29,7 @@ interface Props {
   onDateRange: (from: string | null, to: string | null) => void;
   mobileOpen: boolean;
   closeMobile: () => void;
+  onRequestIds: (ids: string[]) => void; // ← NEW
 }
 
 export default function FilterSidebar({
@@ -44,6 +46,13 @@ export default function FilterSidebar({
   const [flagSet, setFlagSet] = useState<Set<RequestFlag>>(new Set());
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
+  const [requestIds, setRequestIds] = useState<string[]>([]);
+
+  const updateRequestIds = (ids: string[]) => {
+    setRequestIds(ids);
+    onRequestIds(ids);
+  };
+
 
   /* react-select opts built once */
   const svcOpts = useMemo(
@@ -65,6 +74,9 @@ export default function FilterSidebar({
       <button className="rail-close" onClick={closeMobile}>×</button>
 
       <h3 style={{marginTop: 0}}>Filters</h3>
+
+      <label className="rail-label">Service request IDs</label>
+      <MultiIdInput ids={requestIds} onChange={updateRequestIds} />
 
       {/* Priority */}
       <label className="rail-label">Priority</label>

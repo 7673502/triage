@@ -1,0 +1,47 @@
+.multi-id-input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* badges wrapper */
+.multi-id-input .badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.multi-id-input .badge {
+  display: inline-flex;
+  align-items: center;
+  background: #e0e7ff;           /* same as svcsel__multi-value */
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 12px;               /* match svcsel__multi-value__label */
+  color: #1f2937;                /* dark gray */
+  height: 24px;                  /* match select badge height */
+  line-height: 1;
+}
+
+.multi-id-input .badge button {
+  background: none;
+  border: none;
+  margin-left: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #1f2937;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* input box for adding IDs */
+.multi-id-input input[type="text"] {
+  width: 100%;
+  min-height: 34px;              /* match selects */
+  font-size: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: #fff;
+  box-sizing: border-box;
+}
