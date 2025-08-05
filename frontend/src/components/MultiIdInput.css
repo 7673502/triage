@@ -44,4 +44,5 @@
   padding: 6px 8px;
   background: #fff;
   box-sizing: border-box;
+  font: inherit;
 }
