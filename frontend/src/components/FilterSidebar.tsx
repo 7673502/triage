@@ -84,19 +84,44 @@ export default function FilterSidebar({
       </div>
 
       {/* Flags */}
-      <label className="rail-label">Flags</label>
-      <div className="rail-checkboxes">
-        {allFlags.map((f) => (
-          <label key={f}>
-            <input
-              type="checkbox"
-              checked={flagSet.has(f)}
-              onChange={() => updateFlags(f)}
-            />
-            {f.replace(/_/g, ' ').toLowerCase()}
-          </label>
-        ))}
-      </div>
+<label className="rail-label">Flags</label>
+<div className="rail-checkboxes">
+  {/* Select All */}
+  <label >
+    <input
+      type="checkbox"
+      checked={flagSet.size === allFlags.length}
+      indeterminate={flagSet.size > 0 && flagSet.size < allFlags.length} // for completeness; but see note below
+      onChange={() => {
+        if (flagSet.size === allFlags.length) {
+          setFlagSet(new Set());
+          onFlags([]);
+        } else {
+          setFlagSet(new Set(allFlags));
+          onFlags(allFlags.slice());
+        }
+      }}
+    />
+    select all
+  </label>
+  {/* Individual flags */}
+  {allFlags.map((f) => (
+    <label key={f}>
+      <input
+        type="checkbox"
+        checked={flagSet.has(f)}
+        onChange={() => {
+          const next = new Set(flagSet);
+          next.has(f) ? next.delete(f) : next.add(f);
+          setFlagSet(next);
+          onFlags(Array.from(next));
+        }}
+      />
+      {f.replace(/_/g, ' ').toLowerCase()}
+    </label>
+  ))}
+</div>
+
 
       {/* Service */}
       <label className="rail-label">Service name</label>

@@ -44,7 +44,7 @@
 /* form parts (unchanged) */
 .rail-label { display:block; margin:16px 0 6px; font-weight:600; }
 .rail-range-readout { font-size:13px; margin-top:4px; }
-.rail-checkboxes { display:flex; flex-direction:column; gap:4px; max-height:150px; overflow:auto; }
+.rail-checkboxes { display:flex; flex-direction:column; gap:4px; max-height:none; overflow:visible; }
 .svcsel__control { border:1px solid #d1d5db; border-radius:6px; padding-inline:6px; min-height:34px; }
 .svcsel__option--is-focused { background:#f3f4f6; }
 .svcsel__multi-value { background:#e0e7ff; border-radius:4px; padding:0 4px; }
@@ -83,4 +83,25 @@
 
 .citysel__option, .svcsel__option {
   padding: 8px !important;
+}
+
+/* Make react-select service control full-width too */
+.svcsel__control {
+  width: 100%;
+}
+
+/* Match the datetime pickers to the select’s height, font-size & border */
+.filter-rail input[type="datetime-local"] {
+  width: 100%;
+  min-height: 34px;               /* same as the select control */
+  font-size: 16px;                /* same as the select’s options font */
+  border: 1px solid #d1d5db;      /* same 1px gray border */
+  border-radius: 6px;             /* same corner radius */
+  padding: 6px 8px;               /* roughly matches select’s padding */
+  background: #fff;
+  box-sizing: border-box;         /* so width includes padding/border */
+}
+
+.rail-checkboxes label:not(:first-child) {
+  margin-left: 20px;   /* or padding-left: 20px; */
 }
