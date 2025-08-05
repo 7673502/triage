@@ -54,6 +54,10 @@ export default function FilterSidebar({
   const [requestIds, setRequestIds] = useState<string[]>([]);
   const [selectedServices, setSelectedServices] = useState<{ value: string; label: string }[]>([]);
 
+  useEffect(() => {
+  console.log('Sidebar rendered with mobileOpen:', mobileOpen);
+}, [mobileOpen]);
+
   const updateRequestIds = (ids: string[]) => {
     setRequestIds(ids);
     onRequestIds(ids);

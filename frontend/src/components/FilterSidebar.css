@@ -11,7 +11,7 @@
   border-right: 1px solid #e5e7eb;
   background: #fff;
 
-  z-index: 110;
+  z-index: 300;
   transform: translateX(-100%);   /* hidden off-canvas */
   transition: transform .25s ease;
 }
