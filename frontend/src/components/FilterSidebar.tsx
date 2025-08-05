@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Slider from 'rc-slider';
 import Select from 'react-select';
 import 'rc-slider/assets/index.css';
@@ -30,6 +30,8 @@ interface Props {
   mobileOpen: boolean;
   closeMobile: () => void;
   onRequestIds: (ids: string[]) => void; // ← NEW
+  onClearAll: () => void;
+  resetSignal: number;
 }
 
 export default function FilterSidebar({
@@ -40,7 +42,9 @@ export default function FilterSidebar({
   onDateRange,
   mobileOpen,
   closeMobile,
-  onRequestIds
+  onRequestIds,
+  onClearAll,
+  resetSignal
 }: Props) {
   /* local state */
   const [priority, setPriority] = useState<[number, number]>([0, 100]);
@@ -48,13 +52,38 @@ export default function FilterSidebar({
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [requestIds, setRequestIds] = useState<string[]>([]);
+  const [selectedServices, setSelectedServices] = useState<{ value: string; label: string }[]>([]);
 
   const updateRequestIds = (ids: string[]) => {
-    console.log('Sidebar sees IDs:', ids);
     setRequestIds(ids);
     onRequestIds(ids);
+
+    if (ids.length === 1) {
+      // Clear other filters when first ID is added
+      setPriority([0, 100]);
+      onPriority([0, 100]);
+
+      const clearedFlags = new Set<RequestFlag>();
+      setFlagSet(clearedFlags);
+      onFlags([]);
+
+      setFrom('');
+      setTo('');
+      onDateRange(null, null);
+
+      setSelectedServices([]);
+      onServices([]);
+    }
   };
 
+  useEffect(() => {
+  setPriority([0, 100]);
+  setFlagSet(new Set());
+  setFrom('');
+  setTo('');
+  setRequestIds([]);
+  setSelectedServices([]);
+}, [resetSignal]);
 
   /* react-select opts built once */
   const svcOpts = useMemo(
@@ -142,7 +171,11 @@ export default function FilterSidebar({
   options={svcOpts}
   isMulti
   classNamePrefix="svcsel"
-  onChange={(vals) => onServices(vals.map((v) => v.value))}
+  value={selectedServices} 
+  onChange={(vals) => {
+    setSelectedServices([...vals]); 
+    onServices(vals.map((v) => v.value));
+  }}
   placeholder="All services"
   unstyled
   menuPortalTarget={document.body}
@@ -218,6 +251,23 @@ export default function FilterSidebar({
           onDateRange(from || null, e.target.value || null);
         }}
       />
+
+      <button
+  style={{
+    marginTop: 20,
+    width: '100%',
+    padding: '8px 12px',
+    border: '1px solid #d1d5db',
+    borderRadius: 6,
+    background: '#fef2f2',
+    color: '#b91c1c',
+    fontWeight: 600,
+    cursor: 'pointer',
+  }}
+  onClick={onClearAll}
+>
+  Clear All Filters
+</button>
     </aside>
   );
 }
