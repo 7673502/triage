@@ -53,3 +53,35 @@ button {
   background-color: #f3f4f6;   /* gray-100 */
   color: #1f2937;
 }
+
+
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"] {
+  font-family: "Public Sans", system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+/* turn off native styling so our borders show */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  appearance: none;
+  -webkit-appearance: none;
+  /* your Public Sans stack, if you haven’t already */
+  font-family: "Public Sans", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* the border you want */
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  /* match your other inputs */
+  background: #fff;
+  padding: 6px 8px;
+}
+
+/* make sure the built-in calendar icon still shows */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  appearance: auto;
+  -webkit-appearance: auto;
+  cursor: pointer;
+}

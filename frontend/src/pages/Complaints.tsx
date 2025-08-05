@@ -2,8 +2,10 @@ import { useEffect, useState, useMemo } from 'react';
 import ComplaintCard from '../components/ComplaintCard';
 import Paginator from '../components/Paginator';
 import FilterBar, { type OrderKey } from '../components/FilterBar';
+import FilterSidebar from '../components/FilterSidebar';
 import useCityRequests from '../hooks/useCityRequests';
 import { useCity } from '../CityContext';
+import type { RequestFlag } from '../types';
 
 const PAGE_SIZE = 20;
 
@@ -11,89 +13,213 @@ export default function Complaints() {
   const { city } = useCity();
   const { items, loading, error } = useCityRequests();
 
-  /* ---------- state ---------- */
+  /* ------- sort & search ------- */
   const [query, setQuery] = useState('');
-  const [order, setOrder] = useState<OrderKey>('date'); /* default date */
-  const [reverse, setRev] = useState(false);            /* default newest→oldest */
-  const [page, setPage] = useState(0);
+  const [order, setOrder] = useState<OrderKey>('date');
+  const [reverse, setRev] = useState(false);
 
-  /* reset page when filters OR city change */
-  useEffect(() => setPage(0), [city, query, order, reverse]);
+  /* ------- filter state ------- */
+  const [prio, setPrio] = useState<[number, number]>([0, 100]);
+  const [flags, setFlags] = useState<RequestFlag[]>([]);
+  const [services, setServices] = useState<string[]>([]);
+  const [from, setFrom] = useState<string | null>(null);
+  const [to, setTo] = useState<string | null>(null);
 
-  /* ---------- derived list ---------- */
+  /* mobile drawer */
+  const [drawer, setDrawer] = useState(false);
+
+useEffect(() => {
+  if (drawer) {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }
+}, [drawer]);
+
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 901px)');
+    const handler = (e: MediaQueryListEvent) => {
+      if (e.matches) setDrawer(false);
+    };
+    mql.addEventListener
+      ? mql.addEventListener('change', handler)
+      : mql.addListener(handler);
+    return () => {
+      mql.removeEventListener
+        ? mql.removeEventListener('change', handler)
+        : mql.removeListener(handler);
+    };
+  }, []);
+
+  /* ------- list derive ------- */
   const processed = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    let arr = items.filter((it) => {
+      /* priority range */
+      if (it.priority < prio[0] || it.priority > prio[1]) return false;
 
-    /* text filter */
-    let arr = q
-      ? items.filter((it) => {
-          const hay =
-            (it.description || '') +
-            ' ' +
-            (it.address || '') +
-            ' ' +
-            (it.service_name || '');
-          return hay.toLowerCase().includes(q);
-        })
-      : [...items];
-
-    /* sort by order key */
-    arr.sort((a, b) => {
-      if (order === 'priority') {
-        const pa = a.priority ?? 0;
-        const pb = b.priority ?? 0;
-        return pa - pb;                         // low → high
-      } else {
-        /* date: newest first by default */
-        const da = new Date(a.requested_datetime ?? 0).getTime();
-        const db = new Date(b.requested_datetime ?? 0).getTime();
-        return db - da;                         // newest → oldest
+      /* flags include */
+      if (flags.length) {
+        if (!it.flag || !it.flag.some((f) => flags.includes(f))) return false;
       }
+
+      /* service names */
+      if (services.length && !services.includes(it.service_name || '')) return false;
+
+      /* date range */
+      const ts = new Date(it.requested_datetime ?? 0).getTime();
+      if (from && ts < new Date(from).getTime()) return false;
+      if (to && ts > new Date(to).getTime()) return false;
+
+      /* search query */
+      if (query.trim()) {
+        const hay =
+          (it.description || '') +
+          ' ' +
+          (it.address || '') +
+          ' ' +
+          (it.service_name || '');
+        if (!hay.toLowerCase().includes(query.trim().toLowerCase())) return false;
+      }
+      return true;
     });
 
+    /* sort */
+    arr.sort((a, b) => {
+      if (order === 'priority') return (a.priority ?? 0) - (b.priority ?? 0);
+      return new Date(b.requested_datetime ?? 0).getTime() -
+             new Date(a.requested_datetime ?? 0).getTime();
+    });
     if (reverse) arr.reverse();
     return arr;
-  }, [items, query, order, reverse]);
+  }, [items, query, prio, flags, services, from, to, order, reverse]);
 
-  /* ---------- pagination ---------- */
-  const start     = page * PAGE_SIZE;
+  /* pagination */
+  const [page, setPage] = useState(0);
+  useEffect(() => setPage(0), [city, query, prio, flags, services, from, to, order, reverse]);
+
   const pageCount = Math.ceil(processed.length / PAGE_SIZE);
-  const slice     = processed.slice(start, start + PAGE_SIZE);
+  const slice = processed.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
 
-  /* ---------- early-return states ---------- */
-  if (city === null)
-    return <p style={{ textAlign: 'center', paddingTop: 80 }}>Pick a city to view complaints</p>;
+  /* early states */
+  if (city === null) return <p style={{ textAlign: 'center', paddingTop: 80 }}>Pick a city</p>;
   if (loading) return <p style={{ textAlign: 'center', paddingTop: 80 }}>Loading…</p>;
   if (error)   return <p style={{ textAlign: 'center', paddingTop: 80 }}>{error}</p>;
 
-  /* ---------- render ---------- */
+  /* service list for dropdown */
+  const distinctServices = Array.from(new Set(items.map((i) => i.service_name).filter(Boolean)));
+
+  
   return (
     <>
       <FilterBar
-        value={order}     
+        value={order}
         onSearch={setQuery}
-        onOrder={(k) => setOrder(k)}
+        onOrder={setOrder}
         onReverse={() => setRev((r) => !r)}
       />
-      
-      <section
+{drawer && (
+  <div
+    classname="drawer-backdrop"
+    onClick={() => setDrawer(false)}
+    style={{
+      position: 'fixed',
+      top: 'var(--nav-height)',   //  ← start below nav bar
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'rgba(0,0,0,.15)',
+      zIndex: 100,
+    }}
+  />
+)}
+      {/* outer row */}
+      <div style={{ display: 'flex', gap: 24 }}>
+
+      {/* Back-drop */}
+      {drawer && (
+  <div
+    onClick={() => setDrawer(false)}
+    style={{
+      position: 'fixed',
+      top: 'var(--nav-height)',   //  ← start below nav bar
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'rgba(0,0,0,.15)',
+      zIndex: 100,
+    }}
+  />
+)}
+
+      {/* fixed-width rail / mobile drawer */}
+      <FilterSidebar
+        services={distinctServices as string[]}
+        onPriority={setPrio}
+        onFlags={setFlags}
+        onServices={setServices}
+        onDateRange={(f, t) => { setFrom(f); setTo(t); }}
+        mobileOpen={drawer}
+        closeMobile={() => setDrawer(false)}
+      />
+
+      {/* flexible area that holds the centred list */}
+      <div style={{
+        display: 'flex',
+        gap: 24,
+        width: '100%',           /* let the row span the viewport */
+        justifyContent: 'center' /* centre its children horizontally */
+      }}>
+      <div
         style={{
+          maxWidth: 800,
+          margin: '0 auto',          /* ← true horizontal centring */
           display: 'flex',
           flexDirection: 'column',
           gap: 16,
-          maxWidth: 800,
-          margin: '0 auto',
         }}
       >
-        <p style={{margin: 1}}>{processed.length} results</p>
-        {slice.map((req) => (
-          <ComplaintCard key={req.service_request_id} request={req} />
-        ))}
-      </section>
+
+      {/* mobile filter button */}
+      <button
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: 'auto' });
+          setDrawer(true)
+        }}
+        className={`mobile-filter-btn ${drawer ? 'hide' : ''}`}
+        style={{
+          marginBottom: 16,
+          border: '1px solid #d1d5db',
+          padding: '6px 12px',
+          borderRadius: 6,
+          background: '#fff',
+          zIndex: 100,              /* below rail (110) */
+        }}
+      >
+        Filters
+      </button>
+
+      {slice.map((req) => (
+        <ComplaintCard key={req.service_request_id} request={req} />
+      ))}
 
       {pageCount > 1 && (
         <Paginator pageCount={pageCount} current={page} onPage={setPage} />
       )}
+    </div>
+  </div>
+</div>
+
+<style>{`
+        /* show button only on mobile & only when drawer closed */
+        @media (max-width: 900px) {
+          .mobile-filter-btn { display: ${drawer ? 'none' : 'block'}; }
+        }
+        @media (min-width: 901px) {
+          .mobile-filter-btn { display: none; }
+          /* hide the backdrop above desktop widths */
+          .drawer-backdrop { display: none !important; }
+        }
+`}</style>
     </>
   );
 }
