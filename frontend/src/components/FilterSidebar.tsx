@@ -55,9 +55,25 @@ export default function FilterSidebar({
   const [selectedServices, setSelectedServices] = useState<{ value: string; label: string }[]>([]);
 
   const updateRequestIds = (ids: string[]) => {
-    console.log('Sidebar sees IDs:', ids);
     setRequestIds(ids);
     onRequestIds(ids);
+
+    if (ids.length === 1) {
+      // Clear other filters when first ID is added
+      setPriority([0, 100]);
+      onPriority([0, 100]);
+
+      const clearedFlags = new Set<RequestFlag>();
+      setFlagSet(clearedFlags);
+      onFlags([]);
+
+      setFrom('');
+      setTo('');
+      onDateRange(null, null);
+
+      setSelectedServices([]);
+      onServices([]);
+    }
   };
 
   useEffect(() => {
