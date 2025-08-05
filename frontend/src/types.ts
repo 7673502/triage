@@ -33,6 +33,7 @@ export interface RequestItem {
   media_url?: string;
   priority: number;
   flag?: RequestFlag[];
+  incident_label?: string;
 }
 
 export interface Stats {
