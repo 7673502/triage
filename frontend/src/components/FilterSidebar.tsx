@@ -52,6 +52,7 @@ export default function FilterSidebar({
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [requestIds, setRequestIds] = useState<string[]>([]);
+  const [selectedServices, setSelectedServices] = useState<{ value: string; label: string }[]>([]);
 
   const updateRequestIds = (ids: string[]) => {
     console.log('Sidebar sees IDs:', ids);
@@ -65,6 +66,7 @@ export default function FilterSidebar({
   setFrom('');
   setTo('');
   setRequestIds([]);
+  setSelectedServices([]);
 }, [resetSignal]);
 
   /* react-select opts built once */
@@ -153,7 +155,11 @@ export default function FilterSidebar({
   options={svcOpts}
   isMulti
   classNamePrefix="svcsel"
-  onChange={(vals) => onServices(vals.map((v) => v.value))}
+  value={selectedServices} 
+  onChange={(vals) => {
+    setSelectedServices([...vals]); 
+    onServices(vals.map((v) => v.value));
+  }}
   placeholder="All services"
   unstyled
   menuPortalTarget={document.body}
