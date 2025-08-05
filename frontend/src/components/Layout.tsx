@@ -8,7 +8,7 @@ export default function Layout() {
       <main       style={{
         maxWidth: 'clamp(960px, 80vw, 1280px)',
         margin: '0 auto',
-        padding: '80px 24px 24px',
+        padding: '0 24px 24px',
         boxSizing: 'border-box',
       }}>
         <Outlet />

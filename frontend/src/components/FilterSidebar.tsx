@@ -3,21 +3,21 @@ import Slider from 'rc-slider';
 import Select from 'react-select';
 import 'rc-slider/assets/index.css';
 import './FilterSidebar.css';
-import type { RequestFlag } from '../types';
+import { RequestFlag } from '../types';
 
 /* ---------- helpers ---------- */
 
 const allFlags: RequestFlag[] = [
-  'CATEGORY_MISMATCH',
-  'IMAGE_MISMATCH',
-  'OVERSTATED_SEVERITY',
-  'UNCLEAR',
-  'DUPLICATE',
-  'SPAM',
-  'MISSING_INFO',
-  'MISCLASSIFIED_LOCATION',
-  'NON_ISSUE',
-  'OTHER',
+  RequestFlag.CATEGORY_MISMATCH,
+  RequestFlag.IMAGE_MISMATCH,
+  RequestFlag.OVERSTATED_SEVERITY,
+  RequestFlag.UNCLEAR,
+  RequestFlag.DUPLICATE,
+  RequestFlag.SPAM,
+  RequestFlag.MISSING_INFO,
+  RequestFlag.MISCLASSIFIED_LOCATION,
+  RequestFlag.NON_ISSUE,
+  RequestFlag.OTHER,
 ];
 
 interface Props {

@@ -106,120 +106,124 @@ useEffect(() => {
   if (error)   return <p style={{ textAlign: 'center', paddingTop: 80 }}>{error}</p>;
 
   /* service list for dropdown */
-  const distinctServices = Array.from(new Set(items.map((i) => i.service_name).filter(Boolean)));
+  const distinctServices: string[] = Array.from(
+  new Set(
+    items
+      .map((i) => i.service_name)
+      .filter((s): s is string => typeof s === 'string' && s.length > 0)
+  )
+);
 
   
-  return (
-    <>
-      <FilterBar
-        value={order}
-        onSearch={setQuery}
-        onOrder={setOrder}
-        onReverse={() => setRev((r) => !r)}
+return (
+  <>
+    {/* mobile & desktop backdrop */}
+    {drawer && window.innerWidth <= 900 && (
+      <div
+        onClick={() => setDrawer(false)}
+        style={{
+          position: 'fixed',
+          top: 'var(--nav-height)',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,.15)',
+          zIndex: 100,
+        }}
       />
-{drawer && (
-  <div
-    classname="drawer-backdrop"
-    onClick={() => setDrawer(false)}
-    style={{
-      position: 'fixed',
-      top: 'var(--nav-height)',   //  ← start below nav bar
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(0,0,0,.15)',
-      zIndex: 100,
-    }}
-  />
-)}
-      {/* outer row */}
-      <div style={{ display: 'flex', gap: 24 }}>
+    )}
 
-      {/* Back-drop */}
-      {drawer && (
-  <div
-    onClick={() => setDrawer(false)}
-    style={{
-      position: 'fixed',
-      top: 'var(--nav-height)',   //  ← start below nav bar
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(0,0,0,.15)',
-      zIndex: 100,
-    }}
-  />
-)}
-
-      {/* fixed-width rail / mobile drawer */}
+    {/* two-column wrapper */}
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',   // ← align tops
+        gap: 24,
+        paddingTop: 24,             // optional spacing under navbar
+      }}
+    >
+      {/* left: filter rail / drawer */}
       <FilterSidebar
-        services={distinctServices as string[]}
+        services={distinctServices}
         onPriority={setPrio}
         onFlags={setFlags}
         onServices={setServices}
-        onDateRange={(f, t) => { setFrom(f); setTo(t); }}
+        onDateRange={(f, t) => { setFrom(f); setTo(t) }}
         mobileOpen={drawer}
         closeMobile={() => setDrawer(false)}
       />
 
-      {/* flexible area that holds the centred list */}
-      <div style={{
-        display: 'flex',
-        gap: 24,
-        width: '100%',           /* let the row span the viewport */
-        justifyContent: 'center' /* centre its children horizontally */
-      }}>
-      <div
-        style={{
-          maxWidth: 800,
-          margin: '0 auto',          /* ← true horizontal centring */
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 16,
-        }}
-      >
+      {/* right: main content column */}
+      <div style={{ flex: 1, maxWidth: 800 }}>
+        {/* header sits at top of this column */}
+        <header style={{ marginBottom: 16 }}>
+          <h2 style={{ margin: 0 }}>
+            Complaints {city ? `in ${city}` : '(All cities)'}
+          </h2>
+        </header>
 
-      {/* mobile filter button */}
-      <button
-        onClick={() => {
-          window.scrollTo({ top: 0, behavior: 'auto' });
-          setDrawer(true)
-        }}
-        className={`mobile-filter-btn ${drawer ? 'hide' : ''}`}
-        style={{
-          marginBottom: 16,
-          border: '1px solid #d1d5db',
-          padding: '6px 12px',
-          borderRadius: 6,
-          background: '#fff',
-          zIndex: 100,              /* below rail (110) */
-        }}
-      >
-        Filters
-      </button>
+        {/* search + sort bar */}
+        <FilterBar
+          value={order}
+          onSearch={setQuery}
+          onOrder={setOrder}
+          onReverse={() => setRev((r) => !r)}
+        />
 
-      {slice.map((req) => (
-        <ComplaintCard key={req.service_request_id} request={req} />
-      ))}
+        {/* mobile filter button */}
+<button
+  onClick={() => {
+    window.scrollTo(0, 0);
+    setDrawer(true);
+  }}
+  className={`mobile-filter-btn ${drawer ? 'hide' : ''}`}
+  style={{
+    marginBottom: 16,
+    border: '1px solid #d1d5db',
+    padding: '6px 12px',
+    borderRadius: 6,
+    background: '#fff',
+    zIndex: 100,
+    width:'100%'
+  }}
+>
+  Filters
+</button>
+<p style={{marginTop: '-10px'}}>{processed.length} results</p>
 
-      {pageCount > 1 && (
-        <Paginator pageCount={pageCount} current={page} onPage={setPage} />
-      )}
+        {/* results */}
+        <section
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 16,
+          }}
+        >
+          {slice.map((req) => (
+            <ComplaintCard key={req.service_request_id} request={req} />
+          ))}
+        </section>
+
+        {/* pagination */}
+        {pageCount > 1 && (
+          <Paginator
+            pageCount={pageCount}
+            current={page}
+            onPage={setPage}
+          />
+        )}
+      </div>
     </div>
-  </div>
-</div>
 
-<style>{`
-        /* show button only on mobile & only when drawer closed */
-        @media (max-width: 900px) {
-          .mobile-filter-btn { display: ${drawer ? 'none' : 'block'}; }
-        }
-        @media (min-width: 901px) {
-          .mobile-filter-btn { display: none; }
-          /* hide the backdrop above desktop widths */
-          .drawer-backdrop { display: none !important; }
-        }
-`}</style>
-    </>
-  );
+    {/* media styling for the mobile button */}
+    <style>{`
+      @media (max-width: 900px) {
+        .mobile-filter-btn { display: ${drawer ? 'none' : 'block'}; }
+      }
+      @media (min-width: 901px) {
+        .mobile-filter-btn, .drawer-backdrop { display: none !important; }
+      }
+    `}</style>
+  </>
+);
 }
