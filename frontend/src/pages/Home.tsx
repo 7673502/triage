@@ -29,9 +29,21 @@ export default function Home() {
   return (
     <>
         <section style={{ textAlign: 'center', marginBottom: '48px' }}>
-          <h1 style={{ fontSize: '2.25rem', fontWeight: 700, marginBottom: '8px' }}>
-            triage
-          </h1>
+          <div style={{ margin: 32 }}></div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'center' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="-8 -8 96 88" width="80" height="80">  
+              <line x1="40" y1="0" x2="0" y2="69.28" stroke="#aaa" stroke-width="2" />
+              <line x1="40" y1="0" x2="80" y2="69.28" stroke="#aaa" stroke-width="2" />
+              <line x1="0" y1="69.28" x2="80" y2="69.28" stroke="#aaa" stroke-width="2" />
+
+              <circle cx="40" cy="0" r="7" fill="#22c55e" />
+              <circle cx="0" cy="69.28" r="7" fill="#facc15" />
+              <circle cx="80" cy="69.28" r="7" fill="#ef4444" />
+            </svg>
+            <h1 style={{ fontSize: '2.25rem', fontWeight: 700, margin: 0, lineHeight: 1  }}>
+              triage
+            </h1>
+          </div>
           <p style={{ color: '#6b7280', marginBottom: '24px' }}>
             Manage and automatically prioritize complaints in your city.    
           </p>
