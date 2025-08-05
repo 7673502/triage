@@ -73,6 +73,7 @@ export default function FilterBar({ value, onSearch, onOrder, onReverse }: Props
             fontSize: 14,
             background: state.isFocused ? '#f3f4f6' : '#fff',
             cursor: 'pointer',
+            padding: '8px'
           }),
           /* dropdown panel */
           menu: (base) => ({
@@ -84,7 +85,7 @@ export default function FilterBar({ value, onSearch, onOrder, onReverse }: Props
             boxShadow: '0 3px 6px rgba(0,0,0,.05)',
             overflow: 'hidden',    
           }),
-          menuPortal: (base) => ({ ...base, zIndex: 30 }),
+          menuPortal: (base) => ({ ...base, zIndex: 210 }),
         }}
       />
 

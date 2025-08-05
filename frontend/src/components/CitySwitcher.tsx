@@ -58,11 +58,12 @@ export default function CitySwitcher() {
         singleValue: (base) => ({ ...base, fontSize: 14 }),
         option: (base, state) => ({
           ...base,
-          padding: '6px 10px',
+          padding: '8px',
           background: state.isFocused ? '#f3f4f6' : '#fff',
           cursor: 'pointer',
         }),
-        menuPortal: (base) => ({ ...base, zIndex: 30 }),
+        menuPortal: (base) => ({ ...base, zIndex: 210 }),
+        
       }}
     />
   );

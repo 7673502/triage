@@ -1,0 +1,107 @@
+/* base rail – fixed, full-height left column */
+.filter-rail {
+  position: fixed;
+  top: var(--nav-height);   /* start just under the navbar */
+  bottom: 0;
+  left: 0;
+  width: 280px;            /* feel free to tweak */
+  overflow-y: auto;
+
+  padding: 16px;
+  border-right: 1px solid #e5e7eb;
+  background: #fff;
+
+  z-index: 110;
+  transform: translateX(-100%);   /* hidden off-canvas */
+  transition: transform .25s ease;
+}
+
+/* desktop rail (static) */
+.filter-rail.desktop {
+  position: static;
+  transform: none;
+  width: 260px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  max-height: none;
+}
+
+/* when drawer is open on mobile */
+.filter-rail.show {
+  transform: translateX(0);
+}
+
+/* close button */
+.rail-close {
+  display: none;
+  margin-left: auto;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* form parts (unchanged) */
+.rail-label { display:block; margin:16px 0 6px; font-weight:600; }
+.rail-range-readout { font-size:13px; margin-top:4px; }
+.rail-checkboxes { display:flex; flex-direction:column; gap:4px; max-height:none; overflow:visible; }
+.svcsel__control { border:1px solid #d1d5db; border-radius:6px; padding-inline:6px; min-height:34px; }
+.svcsel__option--is-focused { background:#f3f4f6; }
+.svcsel__multi-value { background:#e0e7ff; border-radius:4px; padding:0 4px; }
+
+/* ── media queries ── */
+@media (min-width: 901px) {
+  .filter-rail        { transform: none; position: static; }
+  .filter-rail.show   { transform: none; }
+}
+
+@media (min-width: 901px) {
+  .filter-rail {
+    position: static;            /* back in the flex row  */
+    transform: none;             /* no slide animation    */
+
+    width: 260px;
+    height: auto;
+    max-height: none;
+
+    align-self: flex-start;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+
+    /* restore full outline and rounding */
+    border: 1px solid #e5e7eb;   /* all four sides        */
+    border-radius: 12px;
+  }
+
+  /* the helper class is no longer needed, but keep it identical */
+  .filter-rail.desktop {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+  }
+}
+
+.citysel__option, .svcsel__option {
+  padding: 8px !important;
+}
+
+/* Make react-select service control full-width too */
+.svcsel__control {
+  width: 100%;
+}
+
+/* Match the datetime pickers to the select’s height, font-size & border */
+.filter-rail input[type="datetime-local"] {
+  width: 100%;
+  min-height: 34px;               /* same as the select control */
+  font-size: 16px;                /* same as the select’s options font */
+  border: 1px solid #d1d5db;      /* same 1px gray border */
+  border-radius: 6px;             /* same corner radius */
+  padding: 6px 8px;               /* roughly matches select’s padding */
+  background: #fff;
+  box-sizing: border-box;         /* so width includes padding/border */
+}
+
+.rail-checkboxes label:not(:first-child) {
+  margin-left: 20px;   /* or padding-left: 20px; */
+}
