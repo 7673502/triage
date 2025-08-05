@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { GoogleMap, LoadScript, MarkerClusterer, Marker, InfoWindow } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, MarkerClusterer, Marker, InfoWindow } from '@react-google-maps/api';
 import { useCity } from '../CityContext';
 import { fetchRequestsByCity } from '../api';
 import type { RequestItem } from '../types';
@@ -17,6 +17,10 @@ export default function MapPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: apiKey,
+  });
 
   // Fetch complaints when city changes
   useEffect(() => {
@@ -57,8 +61,9 @@ export default function MapPage() {
     ? complaints.reduce((sum, c) => sum + (c.long ?? 0), 0) / complaints.length
     : defaultCenter.lng;
 
+  if (!isLoaded) return null;
+
   return (
-    <LoadScript googleMapsApiKey={apiKey}>
       <div
         style={{
           position: 'fixed',
@@ -164,6 +169,5 @@ export default function MapPage() {
           )}
         </GoogleMap>
       </div>
-    </LoadScript>
   );
 }
