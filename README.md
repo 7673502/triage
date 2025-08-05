@@ -19,6 +19,11 @@ I'd recommend using [Bruno](https://www.usebruno.com/) if you want to test sendi
 
 **The frontend can be accessed on [port 3000](http://localhost:3000).**
 
+For the map view, create a `.env` file in the `frontend/` folder with this value:
+```
+VITE_GOOGLE_MAPS_API_KEY=[YOUR GOOGLE API KEY]
+```
+
 ## Production
 *work in progress...*
 
