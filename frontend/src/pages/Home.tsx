@@ -3,6 +3,7 @@ import StatCard from '../components/StatCard';
 import { fetchAvailableCities, fetchGlobalStats } from '../api';
 import { useNavigate } from 'react-router-dom';
 import type { Stats } from '../types' 
+import RecentListView from '../components/RecentListView';
 
 export default function Home() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -39,6 +40,7 @@ export default function Home() {
 
   return (
     <>
+    <div style={{margin: '32px'}}>
         <section style={{ textAlign: 'center', marginBottom: '48px' }}>
           <div style={{ margin: 32 }}></div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', verticalAlign: 'center' }}>
@@ -97,6 +99,57 @@ export default function Home() {
             />
           ))}
         </section>
+
+        {/* Recent activity block */}
+<div
+  style={{
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 24,
+    marginTop: 48,
+    paddingBottom: 48,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  }}
+>
+<div
+  style={{
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 250,
+  }}
+>
+    <h2 style={{ fontSize: 18, marginBottom: 12 }}>Recent Complaints</h2>
+    <RecentListView />
+  </div>
+
+<div
+  style={{
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    minWidth: 300,
+  }}
+>
+    <h2 style={{ fontSize: 18, marginBottom: 12 }}></h2>
+    <div
+      style={{
+        width: '100%',
+        height: 300,
+        border: '1px solid #e5e7eb',
+        borderRadius: 12,
+        background: '#f1f5f9',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#94a3b8',
+      }}
+    >
+      Map coming soon...
+    </div>
+  </div>
+</div>
+</div>
     </>
   );
 }
