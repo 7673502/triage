@@ -56,7 +56,7 @@ async def cache_request(
     # global updates
     pipe.incrby(global_priority_sum_key(), priority)
     pipe.incr(global_num_open_key())
-    pipe.zadd(global_ts_zset_key(), {req_id: ts_epoch})
+    pipe.zadd(global_ts_zset_key(), {req_key(city, req_id): ts_epoch})
 
     await pipe.execute()
 
@@ -79,7 +79,7 @@ async def evict_request(city: str, req_id: str) -> None:
     # global updates
     pipe.decrby(global_priority_sum_key(), priority)
     pipe.decr(global_num_open_key())
-    pipe.zrem(global_ts_zset_key(), req_id)
+    pipe.zrem(global_ts_zset_key(), req_key(city, req_id))
 
     await pipe.execute()
 
@@ -156,4 +156,9 @@ async def get_global_stats() -> dict:
         'recent_requests': recent_requests
     }
 
-
+async def get_recent_requests(num: int) -> list[dict]:
+    keys = await redis.zrevrange(global_ts_zset_key(), 0, num - 1)
+    if not keys:
+        return []
+    raw = await redis.mget(keys)
+    return [json.loads(item) for item in raw if item]

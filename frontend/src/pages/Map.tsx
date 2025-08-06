@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { GoogleMap, useJsApiLoader, MarkerClusterer, Marker, InfoWindow } from '@react-google-maps/api';
+import { GoogleMap, MarkerClusterer, Marker, InfoWindow } from '@react-google-maps/api';
 import { useCity } from '../CityContext';
 import { fetchRequestsByCity } from '../api';
 import type { RequestFlag, RequestItem } from '../types';
@@ -26,10 +26,6 @@ export default function MapPage() {
   const [servicesFilter, setServicesFilter] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<{ from: string | null; to: string | null }>({ from: null, to: null });
   const [requestIds, setRequestIds] = useState<string[]>([]);
-
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: apiKey,
-  });
 
   const filtered = complaints.filter((c) => {
     // If filtering by request IDs, override all others
@@ -101,7 +97,7 @@ export default function MapPage() {
     ? complaints.reduce((sum, c) => sum + (c.long ?? 0), 0) / complaints.length
     : defaultCenter.lng;
 
-  if (!isLoaded) return null;
+  
 
 return (
   <>

@@ -6,6 +6,8 @@ import {
   BarChart, Bar, ResponsiveContainer
 } from 'recharts';
 //import Heatmap from "./HeatMap"; // make in future
+import SiteFooter from '../components/SiteFooter';
+
 type Point = { lat: number; lng: number };
 export default function Insights() {
   const { city } = useCity();
@@ -81,6 +83,7 @@ export default function Insights() {
   if (error) return <p style={{ textAlign: 'center', paddingTop: 80 }}>{error}</p>;
 
   return (
+    <>
     <div style={{maxWidth: 1000, margin: '0 auto' }}>
       <h2 style={{ textAlign: 'center' }}>Insights for {city}</h2>
 
@@ -130,5 +133,7 @@ export default function Insights() {
         <Heatmap points={geoPoints} />
       </section> */}
     </div>
+    <SiteFooter />
+    </>
   );
 }

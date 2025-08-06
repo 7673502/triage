@@ -6,6 +6,7 @@ import FilterSidebar from '../components/FilterSidebar';
 import useCityRequests from '../hooks/useCityRequests';
 import { useCity } from '../CityContext';
 import type { RequestFlag } from '../types';
+import SiteFooter from '../components/SiteFooter';
 
 const PAGE_SIZE = 20;
 
@@ -254,6 +255,8 @@ return (
         .mobile-filter-btn, .drawer-backdrop { display: none !important; }
       }
     `}</style>
+
+    <SiteFooter />
   </>
 );
 }

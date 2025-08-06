@@ -36,6 +36,7 @@ export interface RequestItem {
   flag?: RequestFlag[];
   flag_explanation?: string;
   incident_label?: string;
+  city?: string;
 }
 
 export interface Stats {
