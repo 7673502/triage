@@ -106,7 +106,7 @@ export default function ComplaintCard({ request }: Props) {
         </p>
 
         {request.description && (
-          <p style={{ margin: '6px 0 4px', fontSize: 14 }}>{request.description}</p>
+          <p style={{ margin: '3px 0 4px', fontSize: 14 }}>{request.description}</p>
         )}
 
         <p style={{ margin: 0, fontSize: 13, color: '#6b7280' }}>
