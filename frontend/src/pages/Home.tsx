@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import StatCard from '../components/StatCard';
-import { fetchGlobalStats } from '../api';
+import { fetchAvailableCities, fetchGlobalStats } from '../api';
 import { useNavigate } from 'react-router-dom';
 import type { Stats } from '../types' 
 
@@ -8,6 +8,7 @@ export default function Home() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null)
+  const [citiesOnline, setCitiesOnline] = useState(0)
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,6 +23,16 @@ export default function Home() {
 
     return () => ctrl.abort();
   }, []);
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+
+    fetchAvailableCities(ctrl.signal)
+      .then((data) => setCitiesOnline(data.length))
+      .catch(() => {})
+    
+      return () => ctrl.abort();
+  })
 
   if (error)   return <p style={{ paddingTop: 80, textAlign: 'center' }}>{error}</p>;
   if (loading) return <p style={{ paddingTop: 80, textAlign: 'center' }}>Loading…</p>;
@@ -76,7 +87,7 @@ export default function Home() {
             { value: stats.num_open, label: 'Open', tone: 'red'},
             { value: stats.avg_priority, label: 'Avg. Priority', tone: 'slate'},
             { value: stats.recent_requests, label: 'New (1 hr)', tone: 'yellow'},
-            { value: 3, label: 'Cities online', tone: 'green'}, // TODO NEED TO ADD NUMBER OF CITIES
+            { value: citiesOnline, label: citiesOnline === 1 ? 'City online' : 'Cities online', tone: 'green'}, 
           ].map((s) => (
             <StatCard
               key={s.label}
