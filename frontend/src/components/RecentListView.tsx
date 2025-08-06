@@ -27,12 +27,19 @@ export default function RecentListView() {
   useEffect(() => {
     const ctrl = new AbortController();
     fetchRecents(ctrl.signal)
-      .then((res) => {
-        setAll(res as unknown as RequestItem[]); // Adjust based on actual return shape
-        const initial = Array.from({ length: 5 }, (_, i) => i);
+    .then((res) => {
+        const normalized = res.map((r) => ({
+        ...r,
+        priority: r.priority ?? 0,
+        flags: r.flag ?? [],
+        incident_label: r.incident_label ?? 'Unlabeled',
+        }));
+        setAll(normalized);
+        const count = Math.min(res.length, 5);
+        const initial = Array.from({ length: count }, (_, i) => i);
         setIndexes(initial);
-        setVisible(initial.map((i) => res[i]));
-      })
+        setVisible(initial.map((i) => normalized[i]));
+    })
       .catch(console.error);
     return () => ctrl.abort();
   }, []);

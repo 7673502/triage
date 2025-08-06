@@ -1,6 +1,6 @@
 # VARIABLES
 ARG PYTHON_TAG=3.11.13-slim-bookworm
-ARG POETRY_VERSION=2.1.3
+ARG POETRY_VERSION=1.8.3
 
 # DEVELOPMENT
 FROM python:${PYTHON_TAG} AS dev
@@ -22,6 +22,7 @@ CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", 
 # BUILDER FOR PRODUCTION
 FROM python:${PYTHON_TAG} AS builder
 
+ARG POETRY_VERSION
 RUN pip install poetry==${POETRY_VERSION}
 
 WORKDIR /app
@@ -40,4 +41,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./app ./app
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
