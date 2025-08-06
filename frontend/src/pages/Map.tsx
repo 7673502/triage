@@ -60,10 +60,10 @@ export default function MapPage() {
 
   // Fetch complaints when city changes
   useEffect(() => {
-    if (!city) return;
+    const cityKey = city ?? "all";
     setLoading(true);
     setError(null);
-    fetchRequestsByCity(city)
+    fetchRequestsByCity(cityKey)
       .then(setComplaints)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));

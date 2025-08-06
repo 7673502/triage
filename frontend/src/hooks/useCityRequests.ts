@@ -4,7 +4,7 @@ import { fetchRequestsByCity } from '../api';
 import type { RequestItem } from '../types';
 
 export default function useCityRequests() {
-  const { city } = useCity();                 // null → global mode
+  const { city } = useCity();                 // null → "all"
   const [items, setItems]   = useState<RequestItem[]>([]);
   const [loading, setLoad]  = useState(true);
   const [error, setError]   = useState<string | null>(null);
@@ -14,14 +14,9 @@ export default function useCityRequests() {
     setLoad(true);
     setError(null);
 
-    /* if city is null you can either fetch a global feed or early-out; here we early-out */
-    if (city === null) {
-      setItems([]);
-      setLoad(false);
-      return () => ctrl.abort();
-    }
+    const cityKey = city ?? "all";  // ✅ convert null to "all"
 
-    fetchRequestsByCity(city, ctrl.signal)
+    fetchRequestsByCity(cityKey, ctrl.signal)
       .then((raw) =>
         setItems(
           raw.map((r) => ({

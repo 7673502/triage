@@ -78,14 +78,15 @@ export default function Insights() {
     //);
   }, [items]);
 
-  if (!city) return <p style={{ textAlign: 'center', paddingTop: 80 }}>Pick a city to view insights</p>;
   if (loading) return <p style={{ textAlign: 'center', paddingTop: 80 }}>Loading…</p>;
   if (error) return <p style={{ textAlign: 'center', paddingTop: 80 }}>{error}</p>;
+
+  let cityKey = city ?? 'All Cities'
 
   return (
     <>
     <div style={{maxWidth: 1000, margin: '0 auto' }}>
-      <h2 style={{ textAlign: 'center' }}>Insights for {city}</h2>
+      <h2 style={{ textAlign: 'center' }}>Insights for {cityKey}</h2>
 
       <section style={{ marginTop: 30 }}>
         <h2>Requests per Hour (Last 24h)</h2>
