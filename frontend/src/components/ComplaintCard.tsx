@@ -1,4 +1,7 @@
 import { type RequestItem, RequestFlag } from '../types';
+import { Info } from 'lucide-react'; // or use any icon library you prefer
+import { useState } from 'react';
+import titlecase from 'titlecase';
 
 interface Props {
   request: RequestItem;
@@ -23,7 +26,6 @@ function formatDateTime(iso?: string): string {
   });
 }
 
-/* map each flag to a concise pill label & colour  */
 const flagLabel: Record<RequestFlag, string> = {
   VALID: 'valid',
   CATEGORY_MISMATCH: 'category mismatch',
@@ -39,22 +41,25 @@ const flagLabel: Record<RequestFlag, string> = {
 };
 
 const flagColor: Record<RequestFlag, string> = {
-  VALID: '#16a34a',                     // green
+  VALID: '#16a34a',
   CATEGORY_MISMATCH: '#d97706',
   IMAGE_MISMATCH: '#d97706',
   OVERSTATED_SEVERITY: '#d97706',
   UNCLEAR: '#d97706',
-  DUPLICATE: '#dc2626',                 // red-ish
+  DUPLICATE: '#dc2626',
   SPAM: '#dc2626',
   MISSING_INFO: '#d97706',
   MISCLASSIFIED_LOCATION: '#d97706',
   NON_ISSUE: '#dc2626',
-  OTHER: '#6b7280',                     // gray
+  OTHER: '#6b7280',
 };
 
 export default function ComplaintCard({ request }: Props) {
   const priority = request.priority ?? 0;
   const color = priorityColor(priority);
+
+  const flags = request.flag?.filter((f) => f !== RequestFlag.VALID) ?? [];
+  const hasFlags = flags.length > 0;
 
   return (
     <article
@@ -68,8 +73,9 @@ export default function ComplaintCard({ request }: Props) {
         background: '#fff',
       }}
     >
-      {/* coloured priority square */}
+      {/* Priority badge with tooltip */}
       <div
+        title={request.priority_explanation || 'This is the estimated priority of the complaint (higher = more urgent)'}
         style={{
           width: 32,
           height: 32,
@@ -81,37 +87,46 @@ export default function ComplaintCard({ request }: Props) {
           color: '#fff',
           fontWeight: 600,
           fontSize: 14,
+          cursor: 'help',
         }}
       >
         {priority}
       </div>
 
-      {/* main column */}
+      {/* Main content column */}
       <div style={{ flex: 1 }}>
-        <h3 style={{ margin: '0 0 4px', fontSize: 16, fontWeight: 600 }}>
-          {request.description || request.service_name || 'No title'}
+        {/* Title (incident label) */}
+        <h3 style={{ margin: '0 0 2px', fontSize: 16, fontWeight: 600 }}>
+          {titlecase(request.incident_label ?? '') || 'No Label'}
         </h3>
 
-        {/* address • date */}
-        <p style={{ margin: 0, fontSize: 14, color: '#6b7280' }}>
-          {request.address && <>{request.address} &bull; </>}
-          {formatDateTime(request.requested_datetime) && <>{formatDateTime(request.requested_datetime)} &bull; </>}
-          {request.service_request_id}
+        {/* SR# subheading */}
+        <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: '#64748b' }}>
+          SR-ID: {request.service_request_id}
         </p>
 
-        {/* flag pills */}
-        {request.flag && request.flag.length > 0 && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
-            {request.flag
-            ?.filter((f) => f !== RequestFlag.VALID)
-            .map((f) => (
+        {/* Description text */}
+        {request.description && (
+          <p style={{ margin: '6px 0 4px', fontSize: 14 }}>{request.description}</p>
+        )}
+
+        {/* Metadata: address • date */}
+        <p style={{ margin: 0, fontSize: 13, color: '#6b7280' }}>
+          {request.address && <>{request.address} &bull; </>}
+          {formatDateTime(request.requested_datetime)}
+        </p>
+
+        {/* Flags and info icon */}
+        {hasFlags && (
+          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+            {flags.map((f) => (
               <span
                 key={f}
                 style={{
                   fontSize: 11,
                   padding: '2px 6px',
                   borderRadius: 4,
-                  background: flagColor[f] + '22', /* 13% alpha */
+                  background: flagColor[f] + '22',
                   color: flagColor[f],
                   fontWeight: 500,
                 }}
@@ -119,11 +134,29 @@ export default function ComplaintCard({ request }: Props) {
                 {flagLabel[f]}
               </span>
             ))}
+
+            {/* Tooltip icon for flag explanation */}
+            {request.flag_explanation && (
+              <div
+                title={request.flag_explanation}
+                style={{
+                  width: 16,
+                  height: 16,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'help',
+                  color: '#6b7280',
+                }}
+              >
+                <Info size={32} color="#6b7280" />
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* optional thumbnail */}
+      {/* Optional thumbnail */}
       {request.media_url && (
         <img
           src={request.media_url}
