@@ -18,7 +18,8 @@ log = logging.getLogger('georeport-client')
 
 @backoff.on_exception(
     backoff.expo,
-    (httpx.HTTPStatusError, httpx.RemoteProtocolError,),
+    (httpx.HTTPStatusError, httpx.RemoteProtocolError, httpx.ReadTimeout, 
+     httpx.ConnectTimeout, httpx.ConnectError, httpx.TimeoutException),
     jitter=backoff.full_jitter
 )
 async def fetch_open_requests(
