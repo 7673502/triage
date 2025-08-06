@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Stats } from '../types' 
 import RecentListView from '../components/RecentListView';
 import RecentMapView from '../components/RecentMapView';
+import SiteFooter from '../components/SiteFooter';
 
 export default function Home() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -137,6 +138,7 @@ export default function Home() {
   </div>
 </div>
 </div>
+<SiteFooter />
     </>
   );
 }
