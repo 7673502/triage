@@ -1,7 +1,7 @@
-import { useJsApiLoader } from '@react-google-maps/api';
+import { useJsApiLoader, type Libraries } from '@react-google-maps/api';
 import { type ReactNode } from 'react';
 
-const libraries = ['places']; // add other libraries if needed
+const libraries: Libraries = ['places']; // add other libraries if needed
 
 type Props = {
   children: ReactNode;
