@@ -32,7 +32,9 @@ export interface RequestItem {
   long?: number;
   media_url?: string;
   priority: number;
+  priority_explanation?: string;
   flag?: RequestFlag[];
+  flag_explanation?: string;
   incident_label?: string;
 }
 

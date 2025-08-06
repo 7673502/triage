@@ -107,3 +107,8 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     gap: 24px;
   }
 }
+
+.react-tooltip {
+  opacity: 1 !important;
+  z-index: 1000 !important;
+}

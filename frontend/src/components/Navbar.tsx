@@ -18,9 +18,9 @@ export default function Navbar() {
       {/* brand + city */}
       <div className="nav__brand">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-8 -8 96 88" width="40" height="40">  
-  <line x1="40" y1="0" x2="0" y2="69.28" stroke="#aaa" stroke-width="2" />
-  <line x1="40" y1="0" x2="80" y2="69.28" stroke="#aaa" stroke-width="2" />
-  <line x1="0" y1="69.28" x2="80" y2="69.28" stroke="#aaa" stroke-width="2" />
+  <line x1="40" y1="0" x2="0" y2="69.28" stroke="#aaa" strokeWidth="2" />
+  <line x1="40" y1="0" x2="80" y2="69.28" stroke="#aaa" strokeWidth="2" />
+  <line x1="0" y1="69.28" x2="80" y2="69.28" stroke="#aaa" strokeWidth="2" />
 
   <circle cx="40" cy="0" r="7" fill="#22c55e" />
   <circle cx="0" cy="69.28" r="7" fill="#facc15" />
