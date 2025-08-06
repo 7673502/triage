@@ -24,5 +24,5 @@ async def available_cities():
     return list(settings.cities.keys())
 
 @app.get('/v1/recents')
-async def get_recents(num: int = 5):
+async def get_recents(num: int = 15):
     return await cache.get_recent_requests(num)
