@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { GoogleMap, useJsApiLoader, MarkerClusterer, Marker, InfoWindow } from '@react-google-maps/api';
 import { useCity } from '../CityContext';
 import { fetchRequestsByCity } from '../api';
-import type { RequestItem } from '../types';
+import type { RequestFlag, RequestItem } from '../types';
 import FilterSidebar from '../components/FilterSidebar';
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -20,8 +20,45 @@ export default function MapPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [drawer, setDrawer] = useState(false);
 
+  const [priorityRange, setPriorityRange] = useState<[number, number]>([0, 100]);
+  const [flags, setFlags] = useState<RequestFlag[]>([]);
+  const [servicesFilter, setServicesFilter] = useState<string[]>([]);
+  const [dateRange, setDateRange] = useState<{ from: string | null; to: string | null }>({ from: null, to: null });
+  const [requestIds, setRequestIds] = useState<string[]>([]);
+
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: apiKey,
+  });
+
+  const filtered = complaints.filter((c) => {
+    // If filtering by request IDs, override all others
+    if (requestIds.length > 0) {
+      return requestIds.includes(c.service_request_id.toString());
+    }
+
+    // Priority range filter
+    if (c.priority < priorityRange[0] || c.priority > priorityRange[1]) return false;
+
+    // Flag match
+    if (flags.length > 0) {
+      const complaintFlags = c.flag || [];
+      const hasMatch = flags.some((f) => complaintFlags.includes(f));
+      if (!hasMatch) return false;
+    }
+
+    // Service name filter
+    const name = c.service_name ?? '';
+    if (servicesFilter.length > 0 && !servicesFilter.includes(name)) return false;
+
+    // Date range filter
+    if (dateRange.from || dateRange.to) {
+      if (!c.requested_datetime) return false;
+      const dt = new Date(c.requested_datetime);
+      if (dateRange.from && dt < new Date(dateRange.from)) return false;
+      if (dateRange.to && dt > new Date(dateRange.to)) return false;
+    }
+
+    return true;
   });
 
   // Fetch complaints when city changes
@@ -48,12 +85,12 @@ export default function MapPage() {
     fillOpacity: 1,
     strokeWeight: 1,
     strokeColor: "#111",
-    scale: 1.4,
+    scale: 1.5,
     anchor: new google.maps.Point(12, 22),
   });
 
   // InfoWindow data
-  const activeComplaint = complaints.find((c) => c.service_request_id === activeId);
+  const activeComplaint = filtered.find((c) => c.service_request_id === activeId);
 
   // Calculate city center (mean lat/lng, or fallback)
   const cityLat = complaints.length
@@ -122,13 +159,19 @@ return (
 
       {/* Sidebar */}
       <FilterSidebar
-        services={[]}
-        onPriority={() => {}}
-        onFlags={() => {}}
-        onServices={() => {}}
-        onDateRange={() => {}}
-        onRequestIds={() => {}}
-        onClearAll={() => {}}
+        services={Array.from(new Set(complaints.map(c => c.service_name).filter((s): s is string => !!s)))}
+        onPriority={setPriorityRange}
+        onFlags={setFlags}
+        onServices={setServicesFilter}
+        onDateRange={(from, to) => setDateRange({ from, to })}
+        onRequestIds={setRequestIds}
+        onClearAll={() => {
+          setPriorityRange([0, 100]);
+          setFlags([]);
+          setServicesFilter([]);
+          setDateRange({ from: null, to: null });
+          setRequestIds([]);
+        }}
         resetSignal={0}
         mobileOpen={drawer}
         closeMobile={() => setDrawer(false)}
@@ -156,7 +199,7 @@ return (
           <MarkerClusterer>
             {(clusterer) =>
               <>
-              {complaints.filter(c => c.lat && c.long).map((c) => (
+              {filtered.filter(c => c.lat && c.long).map((c) => (
                 <Marker
                   key={c.service_request_id}
                   position={{ lat: c.lat!, lng: c.long! }}
