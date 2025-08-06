@@ -1,4 +1,4 @@
-import { GoogleMap, Marker, InfoWindow, useJsApiLoader, MarkerClusterer } from '@react-google-maps/api';
+import { GoogleMap, Marker, InfoWindow, MarkerClusterer } from '@react-google-maps/api';
 import { useEffect, useState } from 'react';
 import type { RequestItem } from '../types';
 import { fetchRecents } from '../api';
@@ -25,28 +25,6 @@ export default function RecentMapView() {
       .catch(() => {});
     return () => ctrl.abort();
   }, []);
-
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
-  });
-
-  if (!isLoaded) {
-    return (
-      <div
-        style={{
-          ...containerStyle,
-          background: '#f1f5f9',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#94a3b8',
-        }}
-      >
-        Loading map...
-      </div>
-    );
-  }
 
   return (
     <GoogleMap
