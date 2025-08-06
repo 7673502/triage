@@ -123,7 +123,6 @@ useEffect(() => {
   const slice = processed.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
 
   /* early states */
-  if (city === null) return <p style={{ textAlign: 'center', paddingTop: 80 }}>Pick a city</p>;
   if (loading) return <p style={{ textAlign: 'center', paddingTop: 80 }}>Loading…</p>;
   if (error)   return <p style={{ textAlign: 'center', paddingTop: 80 }}>{error}</p>;
 
