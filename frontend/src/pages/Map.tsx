@@ -19,6 +19,7 @@ export default function MapPage() {
   const [error, setError] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [drawer, setDrawer] = useState(false);
+  const [resetCounter, setResetCounter] = useState(0);
 
   const [priorityRange, setPriorityRange] = useState<[number, number]>([0, 100]);
   const [flags, setFlags] = useState<RequestFlag[]>([]);
@@ -171,8 +172,9 @@ return (
           setServicesFilter([]);
           setDateRange({ from: null, to: null });
           setRequestIds([]);
+          setResetCounter((prev) => prev + 1);
         }}
-        resetSignal={0}
+        resetSignal={resetCounter}
         mobileOpen={drawer}
         closeMobile={() => setDrawer(false)}
       />
