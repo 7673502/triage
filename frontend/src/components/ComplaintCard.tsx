@@ -19,9 +19,9 @@ function formatDateTime(iso?: string): string {
   const d = new Date(iso);
   return d.toLocaleString(undefined, {
     year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
     minute: '2-digit',
   });
 }
