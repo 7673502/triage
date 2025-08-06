@@ -4,6 +4,7 @@ import { fetchAvailableCities, fetchGlobalStats } from '../api';
 import { useNavigate } from 'react-router-dom';
 import type { Stats } from '../types' 
 import RecentListView from '../components/RecentListView';
+import RecentMapView from '../components/RecentMapView';
 
 export default function Home() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -131,22 +132,8 @@ export default function Home() {
     minWidth: 300,
   }}
 >
-    <h2 style={{ fontSize: 18, marginBottom: 12 }}></h2>
-    <div
-      style={{
-        width: '100%',
-        height: 300,
-        border: '1px solid #e5e7eb',
-        borderRadius: 12,
-        background: '#f1f5f9',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#94a3b8',
-      }}
-    >
-      Map coming soon...
-    </div>
+  <h2 style={{ fontSize: 5, marginBottom: 12, visibility: 'hidden' }}>Recent Map</h2>
+    <RecentMapView />
   </div>
 </div>
 </div>

@@ -27,7 +27,7 @@ export async function fetchGlobalStats(signal?: AbortSignal): Promise<Stats> {
   return res.json();
 }
 
-export async function fetchRecents(signal?: AbortSignal): Promise<Stats> {
+export async function fetchRecents(signal?: AbortSignal): Promise<RequestItem[]> {
   const res = await fetch(`${API_BASE}/recents`, { signal });
   if (!res.ok) throw new Error(`Recent requests fetch failed: ${res.status}`);
   return res.json();
