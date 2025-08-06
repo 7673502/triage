@@ -23,6 +23,7 @@
     "react-paginate": "^8.3.0",
     "react-router-dom": "^6.30.1",
     "react-select": "^5.10.2",
+    "react-tooltip": "^5.29.1",
     "recharts": "^3.1.1",
     "titlecase": "^1.1.3"
   },

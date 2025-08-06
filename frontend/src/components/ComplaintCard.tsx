@@ -1,17 +1,16 @@
 import { type RequestItem, RequestFlag } from '../types';
-import { Info } from 'lucide-react'; // or use any icon library you prefer
-import { useState } from 'react';
+import { Info } from 'lucide-react';
+import { Tooltip } from 'react-tooltip';
 import titlecase from 'titlecase';
 
 interface Props {
   request: RequestItem;
 }
 
-/* colour helpers */
 function priorityColor(score: number): string {
-  if (score >= 70) return '#dc2626';   // red-600
-  if (score >= 30) return '#d97706';   // amber-600
-  return '#16a34a';                    // green-600
+  if (score >= 70) return '#dc2626';
+  if (score >= 30) return '#d97706';
+  return '#16a34a';
 }
 
 function formatDateTime(iso?: string): string {
@@ -57,9 +56,7 @@ const flagColor: Record<RequestFlag, string> = {
 export default function ComplaintCard({ request }: Props) {
   const priority = request.priority ?? 0;
   const color = priorityColor(priority);
-
   const flags = request.flag?.filter((f) => f !== RequestFlag.VALID) ?? [];
-  const hasFlags = flags.length > 0;
 
   return (
     <article
@@ -73,9 +70,10 @@ export default function ComplaintCard({ request }: Props) {
         background: '#fff',
       }}
     >
-      {/* Priority badge with tooltip */}
+      {/* Priority square with tooltip */}
       <div
-        title={request.priority_explanation || 'This is the estimated priority of the complaint (higher = more urgent)'}
+        data-tooltip-id={`priority-${request.service_request_id}`}
+        data-tooltip-content={request.priority_explanation || 'This is the estimated priority of the complaint (higher = more urgent)'}
         style={{
           width: 32,
           height: 32,
@@ -92,32 +90,31 @@ export default function ComplaintCard({ request }: Props) {
       >
         {priority}
       </div>
+      <Tooltip id={`priority-${request.service_request_id}`} place="top" />
 
-      {/* Main content column */}
+      {/* Main column */}
       <div style={{ flex: 1 }}>
-        {/* Title (incident label) */}
         <h3 style={{ margin: '0 0 2px', fontSize: 16, fontWeight: 600 }}>
           {titlecase(request.incident_label ?? '') || 'No Label'}
         </h3>
 
-        {/* SR# subheading */}
         <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: '#64748b' }}>
           SR-ID: {request.service_request_id}
         </p>
+        <p style={{ fontSize: 13, margin: 0, color: '#6b7280' }}>
+          {request.service_name}
+        </p>
 
-        {/* Description text */}
         {request.description && (
           <p style={{ margin: '6px 0 4px', fontSize: 14 }}>{request.description}</p>
         )}
 
-        {/* Metadata: address • date */}
         <p style={{ margin: 0, fontSize: 13, color: '#6b7280' }}>
           {request.address && <>{request.address} &bull; </>}
           {formatDateTime(request.requested_datetime)}
         </p>
 
-        {/* Flags and info icon */}
-        {hasFlags && (
+        {flags.length > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
             {flags.map((f) => (
               <span
@@ -135,10 +132,11 @@ export default function ComplaintCard({ request }: Props) {
               </span>
             ))}
 
-            {/* Tooltip icon for flag explanation */}
+            {/* Info tooltip for flag explanation */}
             {request.flag_explanation && (
               <div
-                title={request.flag_explanation}
+                data-tooltip-id={`flag-${request.service_request_id}`}
+                data-tooltip-content={request.flag_explanation}
                 style={{
                   width: 16,
                   height: 16,
@@ -152,11 +150,13 @@ export default function ComplaintCard({ request }: Props) {
                 <Info size={32} color="#6b7280" />
               </div>
             )}
+            {request.flag_explanation && (
+              <Tooltip id={`flag-${request.service_request_id}`} place="top" />
+            )}
           </div>
         )}
       </div>
 
-      {/* Optional thumbnail */}
       {request.media_url && (
         <img
           src={request.media_url}
