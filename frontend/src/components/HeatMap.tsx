@@ -10,16 +10,29 @@ interface Props {
 }
 
 function getMapboxImageURL(points: Point[], width: number, height: number, token: string): string {
-    if (points.length === 0) return '';
-  
-    const avgLat = points.reduce((sum, p) => sum + p.lat, 0) / points.length;
-    const avgLng = points.reduce((sum, p) => sum + p.lng, 0) / points.length;
-  
-    const zoom = 12;
-    const style = 'light-v10';
-  
-    return `https://api.mapbox.com/styles/v1/mapbox/${style}/static/${avgLng},${avgLat},${zoom}/${width}x${height}@2x?access_token=${token}`;
-  }
+  if (points.length === 0) return '';
+
+  const style = 'light-v10';
+
+  const lats = points.map(p => p.lat);
+  const lngs = points.map(p => p.lng);
+  const minLat = Math.min(...lats);
+  const maxLat = Math.max(...lats);
+  const minLng = Math.min(...lngs);
+  const maxLng = Math.max(...lngs);
+
+  const latPadding = (maxLat - minLat) * 0.1 || 0.01;
+  const lngPadding = (maxLng - minLng) * 0.1 || 0.01;
+
+  const paddedMinLat = minLat - latPadding;
+  const paddedMaxLat = maxLat + latPadding;
+  const paddedMinLng = minLng - lngPadding;
+  const paddedMaxLng = maxLng + lngPadding;
+
+  const bbox = `[${paddedMinLng},${paddedMinLat},${paddedMaxLng},${paddedMaxLat}]`;
+
+  return `https://api.mapbox.com/styles/v1/mapbox/${style}/static/${bbox}/${width}x${height}@2x?access_token=${token}`;
+}
 
 export default function Heatmap({
   points,
