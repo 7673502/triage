@@ -6,6 +6,8 @@ import {
   BarChart, Bar, ResponsiveContainer
 } from 'recharts';
 
+import { type RequestItem } from '../types';
+
 import SiteFooter from '../components/SiteFooter';
 
 //import Heatmap from "../components/HeatMap";
@@ -74,7 +76,7 @@ export default function Insights() {
     // Heatmap points
     setGeoPoints(
       items
-        .filter((r): r is { lat: number; long: number; priority?: number } =>
+        .filter((r): r is RequestItem & { lat: number; long: number; priority?: number } =>
           typeof r.lat === 'number' && typeof r.long === 'number'
         )
         .map((r) => ({ lat: r.lat, lng: r.long, priority: r.priority ?? 0 }))
