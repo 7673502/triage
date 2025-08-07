@@ -1,0 +1,2 @@
+compose.prod.yml merge=ours
+nginx/nginx.conf merge=ours
