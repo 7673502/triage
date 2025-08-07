@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { type RequestItem, RequestFlag } from '../types';
 import { Info } from 'lucide-react';
 import { Tooltip } from 'react-tooltip';
@@ -57,6 +58,8 @@ export default function ComplaintCard({ request }: Props) {
   const priority = request.priority ?? 0;
   const color = priorityColor(priority);
   const flags = request.flag?.filter((f) => f !== RequestFlag.VALID) ?? [];
+
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <article
@@ -161,10 +164,48 @@ export default function ComplaintCard({ request }: Props) {
         <img
           src={request.media_url}
           alt=""
-          style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8 }}
+          style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8, cursor: 'pointer' }}
+          onClick={() => setShowModal(true)}
+        
           onError={(e) => (e.currentTarget.style.display = 'none')}
         />
       )}
+      
+      {/* display full image */}
+      {showModal && (
+        <div
+          onClick={() => setShowModal(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+            cursor: 'zoom-out',
+          }}
+        >
+          <img
+            src={request.media_url}
+            alt="full"
+            style={{
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              borderRadius: 12,
+              boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+    
     </article>
+  
+    
+
   );
 }
