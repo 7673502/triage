@@ -8,8 +8,8 @@ import {
 
 import SiteFooter from '../components/SiteFooter';
 
-
-import Heatmap from "../components/HeatMap";
+//import Heatmap from "../components/HeatMap";
+import MapboxHeatmap from '../components/MapboxHeatmap';
 
 type Point = { lat: number; lng: number };
 export default function Insights() {
@@ -151,7 +151,7 @@ export default function Insights() {
 
       <section style={{ marginTop: 48 }}>
         <h2>Complaint Heatmap</h2>
-        <Heatmap points={geoPoints} />
+        <MapboxHeatmap points={geoPoints} />
       </section>
     </div>
     <SiteFooter />
