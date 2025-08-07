@@ -6,11 +6,10 @@ import {
   BarChart, Bar, ResponsiveContainer
 } from 'recharts';
 
-//import Heatmap from "./HeatMap"; // make in future
 import SiteFooter from '../components/SiteFooter';
 
 
-import Heatmap from "./HeatMap"; // make in future
+import Heatmap from "../components/HeatMap";
 
 type Point = { lat: number; lng: number };
 export default function Insights() {
