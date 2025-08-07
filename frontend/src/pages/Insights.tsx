@@ -11,7 +11,7 @@ import SiteFooter from '../components/SiteFooter';
 //import Heatmap from "../components/HeatMap";
 import MapboxHeatmap from '../components/MapboxHeatmap';
 
-type Point = { lat: number; lng: number };
+type Point = { lat: number; lng: number; priority?: number };
 export default function Insights() {
   const { city } = useCity();
   const { items, loading, error } = useCityRequests();
@@ -74,10 +74,10 @@ export default function Insights() {
     // Heatmap points
     setGeoPoints(
       items
-        .filter((r): r is { lat: number; long: number } =>
+        .filter((r): r is { lat: number; long: number; priority?: number } =>
           typeof r.lat === 'number' && typeof r.long === 'number'
         )
-        .map((r) => ({ lat: r.lat, lng: r.long }))
+        .map((r) => ({ lat: r.lat, lng: r.long, priority: r.priority ?? 0 }))
     );
   }, [items]);
 

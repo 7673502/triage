@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-type Point = { lat: number; lng: number };
+type Point = { lat: number; lng: number; priority?: number };
 
 interface Props {
   points: Point[];
@@ -28,7 +28,7 @@ export default function MapboxHeatmap({ points, style }: Props) {
           coordinates: [p.lng, p.lat],
         },
         properties: {
-          weight: 1,
+          weight: Math.max(0, Math.min(1, (p.priority ?? 0) / 100)),
         },
       })),
     };
@@ -77,12 +77,12 @@ export default function MapboxHeatmap({ points, style }: Props) {
             'interpolate',
             ['linear'],
             ['heatmap-density'],
-            0, 'rgba(255,255,255,0)',
-            0.2, 'rgba(255,200,200,0.4)',
-            0.4, 'rgba(255,100,100,0.6)',
-            0.6, 'rgba(255,0,0,0.7)',
-            0.8, 'rgba(200,0,0,0.8)',
-            1, 'rgba(128,0,0,1)',
+            0.0, 'rgba(205, 255, 205, 0.11)',      // transparent green (low)
+            0.2, 'rgba(207, 238, 144, 0.5)', // lightgreen
+            0.4, 'rgba(255,255,0,0.6)',   // yellow
+            0.6, 'rgba(255,165,0,0.7)',   // orange
+            0.8, 'rgba(255,69,0,0.9)',    // orange-red
+            1.0, 'rgba(255,0,0,1)',       // red (high)
           ],
           'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 4, 15, 25],
           'heatmap-opacity': 0.8,
