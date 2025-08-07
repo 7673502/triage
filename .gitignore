@@ -207,3 +207,6 @@ __marimo__/
 
 # Ignore vscode
 .vscode/*
+
+# OS
+.DS_Store
