@@ -37,6 +37,8 @@ export default function Heatmap({
     lng: number;
   } | null>(null);
 
+  const showAxes = false;
+
   const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const plotWidth = width - axisMargin;
   const plotHeight = height - axisMargin;
@@ -93,61 +95,70 @@ export default function Heatmap({
       const [x, y] = key.split(',').map(Number);
       const { count } = grid[key];
       const intensity = count / maxCount;
+
+      const radius = Math.min(cellWidth, cellHeight) * 0.4;
+      const centerX = axisMargin + x * cellWidth + cellWidth / 2;
+      const centerY = y * cellHeight + cellHeight / 2;
+
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+
       ctx.fillStyle = `rgba(255, 0, 0, ${intensity * 0.7})`;
-      ctx.fillRect(
-        axisMargin + x * cellWidth,
-        y * cellHeight,
-        cellWidth,
-        cellHeight
-      );
+      ctx.shadowColor = ctx.fillStyle;
+      ctx.shadowBlur = 10;
+      ctx.fill();
+
+      ctx.shadowBlur = 0;
     }
 
-    // Draw axes
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 1;
-    ctx.font = '10px Arial';
-    ctx.fillStyle = '#333';
-    ctx.textAlign = 'right';
-
-
-    // Y-axis (latitude)
-    ctx.beginPath();
-    ctx.moveTo(axisMargin, 0);
-    ctx.lineTo(axisMargin, plotHeight);
-    ctx.stroke();
-
-    const latTicks = 5;
-    for (let i = 0; i <= latTicks; i++) {
-      const lat = minLat + (latRange * i) / latTicks;
-      const y = plotHeight - (i * plotHeight) / latTicks;
+    if (showAxes) {
+      // Draw axes
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 1;
+      ctx.font = '10px Arial';
+      ctx.fillStyle = '#333';
       ctx.textAlign = 'right';
-      ctx.fillText(lat.toFixed(3), axisMargin - 4, y);
+
+
+      // Y-axis (latitude)
+      ctx.beginPath();
+      ctx.moveTo(axisMargin, 0);
+      ctx.lineTo(axisMargin, plotHeight);
+      ctx.stroke();
+
+      const latTicks = 5;
+      for (let i = 0; i <= latTicks; i++) {
+        const lat = minLat + (latRange * i) / latTicks;
+        const y = plotHeight - (i * plotHeight) / latTicks;
+        ctx.textAlign = 'right';
+        ctx.fillText(lat.toFixed(3), axisMargin - 4, y);
+      }
+
+      // x-axis (longitude)
+      ctx.beginPath();
+      ctx.moveTo(axisMargin, plotHeight);
+      ctx.lineTo(width, plotHeight);
+      ctx.stroke();
+
+      const lngTicks = 5;
+      for (let i = 0; i <= lngTicks; i++) {
+        const lng = minLng + (lngRange * i) / lngTicks;
+        const x = axisMargin + (i * plotWidth) / lngTicks;
+        ctx.fillText(lng.toFixed(3), x, plotHeight + 12);
+      }
+
+      // Labels
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Longitude', width / 2, height - 25);
+
+      ctx.save();
+      ctx.translate(15, plotHeight / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.textAlign = 'center';
+      ctx.fillText('Latitude', 0, -5);
+      ctx.restore();
     }
-
-    // x-axis (longitude)
-    ctx.beginPath();
-    ctx.moveTo(axisMargin, plotHeight);
-    ctx.lineTo(width, plotHeight);
-    ctx.stroke();
-
-    const lngTicks = 5;
-    for (let i = 0; i <= lngTicks; i++) {
-      const lng = minLng + (lngRange * i) / lngTicks;
-      const x = axisMargin + (i * plotWidth) / lngTicks;
-      ctx.fillText(lng.toFixed(3), x, plotHeight + 12);
-    }
-
-    // Labels
-    ctx.font = '12px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Longitude', width / 2, height - 25);
-
-    ctx.save();
-    ctx.translate(15, plotHeight / 2);
-    ctx.rotate(-Math.PI / 2);
-    ctx.textAlign = 'center';
-    ctx.fillText('Latitude', 0, -5);
-    ctx.restore();
 
     // Hover logic
     const handleMouseMove = (e: MouseEvent) => {
