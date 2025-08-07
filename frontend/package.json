@@ -15,6 +15,7 @@
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
     "lucide-react": "^0.536.0",
+    "mapbox-gl": "^3.14.0",
     "rc-slider": "^11.1.8",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.10",
