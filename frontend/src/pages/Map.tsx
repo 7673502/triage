@@ -256,7 +256,7 @@ export default function MapPage() {
           .replace(/"/g, '&quot;')
           .replace(/'/g, '&#039;');
 
-      const makeSnippet = (text: string, wordLimit = 15) => {
+      const makeSnippet = (text: string, wordLimit = 25) => {
         const words = text.trim().split(/\s+/).filter(Boolean);
         if (words.length === 0) return '';
         const truncated = words.length > wordLimit;
@@ -264,6 +264,7 @@ export default function MapPage() {
         return truncated ? `${first} …` : first;
       };
 
+      // UPDATED: format with 12-hour clock and AM/PM
       const formatMDYHM = (dateStr?: string | null) => {
         if (!dateStr) return '';
         const d = new Date(dateStr);
@@ -271,9 +272,11 @@ export default function MapPage() {
         const month = d.getMonth() + 1;
         const day = d.getDate();
         const year = d.getFullYear();
-        const hours = d.getHours();
+        const h24 = d.getHours();
+        const ampm = h24 >= 12 ? 'PM' : 'AM';
+        const h12 = h24 % 12 || 12;
         const minutes = `${d.getMinutes()}`.padStart(2, '0');
-        return `${month}/${day}/${year}, ${hours}:${minutes}`;
+        return `${month}/${day}/${year}, ${h12}:${minutes} ${ampm}`;
       };
 
       // Click point -> Popup with abbreviated Complaint info + flags pills + date
@@ -302,7 +305,7 @@ export default function MapPage() {
         const priorityColor = getPinColor(priority);
 
         const description = complaint?.description ?? props.description ?? '';
-        const snippet = description ? makeSnippet(String(description), 15) : '';
+        const snippet = description ? makeSnippet(String(description), 25) : '';
         const dateStr = formatMDYHM(complaint?.requested_datetime ?? props.requested_datetime ?? '');
 
         // Determine flags (prefer the complaint object; otherwise try to parse props.flag)
@@ -607,7 +610,7 @@ export default function MapPage() {
                   borderRadius: '50%',
                   background: '#219ebc',
                   border: '1px solid #0b0f19',
-                } as any}
+                }}
               />
               <span>Cluster (multiple complaints) — click to zoom</span>
             </div>
