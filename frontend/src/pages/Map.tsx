@@ -33,8 +33,8 @@ export default function MapPage() {
   const mapRef = useRef<MapboxMap | null>(null);
   const popupRef = useRef<MapboxPopup | null>(null);
   const [mapReady, setMapReady] = useState(false);
-  const hasFittedRef = useRef(false);        // controls auto-fit timing
-  const userMovedRef = useRef(false);        // if user interacted, don't fight them
+  const hasFittedRef = useRef(false);
+  const userMovedRef = useRef(false);
 
   useEffect(() => {
     if (!mapboxToken) {
@@ -43,6 +43,35 @@ export default function MapPage() {
       mapboxgl.accessToken = mapboxToken;
     }
   }, []);
+
+  // ---- Flags label + color maps (copied from your ComplaintCard) ----
+  const flagLabel: Record<RequestFlag, string> = {
+    VALID: 'valid',
+    CATEGORY_MISMATCH: 'category mismatch',
+    IMAGE_MISMATCH: 'image mismatch',
+    OVERSTATED_SEVERITY: 'overstated severity',
+    UNCLEAR: 'unclear',
+    DUPLICATE: 'duplicate',
+    SPAM: 'spam',
+    MISSING_INFO: 'missing info',
+    MISCLASSIFIED_LOCATION: 'misclassified location',
+    NON_ISSUE: 'non-issue',
+    OTHER: 'other',
+  };
+  const flagColor: Record<RequestFlag, string> = {
+    VALID: '#16a34a',
+    CATEGORY_MISMATCH: '#d97706',
+    IMAGE_MISMATCH: '#d97706',
+    OVERSTATED_SEVERITY: '#d97706',
+    UNCLEAR: '#d97706',
+    DUPLICATE: '#dc2626',
+    SPAM: '#dc2626',
+    MISSING_INFO: '#d97706',
+    MISCLASSIFIED_LOCATION: '#d97706',
+    NON_ISSUE: '#dc2626',
+    OTHER: '#6b7280',
+  };
+  // -----------------------------------------------------------------
 
   // Filtering logic
   const filtered = useMemo(() => {
@@ -82,21 +111,13 @@ export default function MapPage() {
   const getPinColor = (priority: number) =>
     priority >= 70 ? '#ef4444' : priority >= 30 ? '#f59e42' : '#22c55e';
 
-  // Calculate a simple fallback center (not used for auto-fit; just initial)
-  const cityLat = complaints.length
-    ? complaints.reduce((sum, c) => sum + (c.lat ?? 0), 0) / complaints.length
-    : defaultCenter.lat;
-  const cityLng = complaints.length
-    ? complaints.reduce((sum, c) => sum + (c.long ?? 0), 0) / complaints.length
-    : defaultCenter.lng;
-
   // Helper: compute padding that accounts for the sidebar on desktop
   function computePadding(): mapboxgl.PaddingOptions {
     const isDesktop = typeof window !== 'undefined' && window.matchMedia('(min-width: 901px)').matches;
     return {
       top: 40,
       bottom: 40,
-      left: isDesktop ? 320 : 12,  // leave room for 300px rail + a little gutter
+      left: isDesktop ? 320 : 12,
       right: 12,
     };
   }
@@ -108,7 +129,6 @@ export default function MapPage() {
       .map((c) => [c.long as number, c.lat as number] as [number, number]);
 
     if (coords.length === 0) {
-      // Nothing — show the whole U.S. roughly
       map.easeTo({ center: [defaultCenter.lng, defaultCenter.lat], zoom: 3, duration: 600 });
       return;
     }
@@ -122,7 +142,7 @@ export default function MapPage() {
     map.fitBounds(bounds, {
       padding: computePadding(),
       duration: 700,
-      maxZoom: 13, // don't over-zoom when points are very close
+      maxZoom: 13,
     });
   }
 
@@ -133,8 +153,8 @@ export default function MapPage() {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v12',
-      center: [cityLng, cityLat], // temporary; we auto-fit after load
-      zoom: complaints.length ? 12 : 4,
+      center: [defaultCenter.lng, defaultCenter.lat],
+      zoom: 3,
       attributionControl: true,
     });
 
@@ -199,10 +219,10 @@ export default function MapPage() {
           'circle-color': [
             'case',
             ['>=', ['get', 'priority'], 70],
-            '#ef4444', // red
+            '#ef4444',
             ['>=', ['get', 'priority'], 30],
-            '#f59e42', // yellow
-            '#22c55e', // green
+            '#f59e42',
+            '#22c55e',
           ],
           'circle-radius': 6,
           'circle-stroke-width': 1,
@@ -230,7 +250,7 @@ export default function MapPage() {
         }
       });
 
-      // Click point -> Popup with abbreviated Complaint info
+      // Click point -> Popup with abbreviated Complaint info + flags pills
       map.on('click', 'unclustered-point', (e) => {
         const feature = e.features?.[0];
         if (!feature) return;
@@ -245,7 +265,8 @@ export default function MapPage() {
 
         const content = document.createElement('div');
         content.style.minWidth = '220px';
-        content.style.maxWidth = '300px';
+        content.style.maxWidth = '320px';
+        content.style.overflow = 'hidden';
         content.style.fontFamily = 'system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial';
 
         const priority = complaint?.priority ?? Number(props.priority ?? 0);
@@ -255,25 +276,94 @@ export default function MapPage() {
 
         const priorityColor = getPinColor(priority);
 
+        // Determine flags (prefer the complaint object; otherwise try to parse props.flag)
+        let flagArray: string[] = [];
+        if (complaint?.flag && Array.isArray(complaint.flag)) {
+          flagArray = complaint.flag;
+        } else if (props.flag) {
+          try {
+            if (typeof props.flag === 'string') {
+              const parsed = JSON.parse(props.flag);
+              if (Array.isArray(parsed)) flagArray = parsed;
+            } else if (Array.isArray(props.flag)) {
+              flagArray = props.flag;
+            }
+          } catch {
+            // ignore parse errors
+            flagArray = [];
+          }
+        }
+
+        // Exclude VALID flag similar to the card
+        const visibleFlags = (flagArray || []).filter((f) => f !== 'VALID');
+
+        // Build HTML for pills
+        const pillsHtml = visibleFlags
+          .map((f) => {
+            const label = (flagLabel as any)[f] ?? String(f).replace(/_/g, ' ').toLowerCase();
+            const color = (flagColor as any)[f] ?? '#6b7280';
+            return `<span style="
+              font-size:12px;
+              padding:4px 8px;
+              border-radius:999px;
+              background:${color}22;
+              color:${color};
+              font-weight:500;
+              margin-right:6px;
+              display:inline-block;
+              margin-top:6px;
+            ">${label}</span>`;
+          })
+          .join('');
+
         content.innerHTML = `
           <div style="font-weight:700;font-size:16px;margin-bottom:6px;display:flex;align-items:center;">
             <span style="
-              width:18px;height:18px;display:inline-block;border-radius:4px;margin-right:8px;
-              background:${priorityColor};color:#fff;text-align:center;line-height:18px;font-size:13px;font-weight:600;
+            min-width:26px;
+            height:18px;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:4px;
+            margin-right:8px;
+            background:${priorityColor};
+            color:#fff;
+            font-weight:600;
+            font-size:12px;
+            padding:0 6px;
+            box-sizing:border-box;
+            white-space:nowrap;
             ">${Number.isFinite(priority) ? priority : ''}</span>
             <span>${titlecase(String(incidentLabel || ''))}</span>
           </div>
           ${
             media_url
-              ? `<img src="${media_url}" alt="complaint" style="max-width:260px;max-height:180px;display:block;margin:0 auto 8px auto;border-radius:8px;object-fit:cover;background:#f3f4f6" onerror="this.style.display='none'"/>`
+              ? `<img
+                   src="${media_url}"
+                   alt="complaint"
+                   style="
+                     display:block;
+                     width:100%;
+                     max-width:100%;
+                     height:auto;
+                     max-height:200px;
+                     margin:0 auto 8px auto;
+                     border-radius:8px;
+                     object-fit:contain;
+                     background:#f3f4f6;
+                   "
+                   onerror="this.style.display='none'"
+                 />`
               : ''
           }
           <p style="margin:0 0 6px 0;font-size:13px;color:#475569;">SR-ID: ${serviceId}</p>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;">${pillsHtml}</div>
         `;
 
         if (popupRef.current) popupRef.current.remove();
 
         const popup = new mapboxgl.Popup({ closeOnClick: true, closeButton: true })
+          .setMaxWidth('340px')
           .setLngLat(coords)
           .setDOMContent(content)
           .addTo(map);
@@ -326,6 +416,7 @@ export default function MapPage() {
           priority: c.priority,
           incident_label: c.incident_label ?? 'No label',
           media_url: c.media_url ?? '',
+          // keep flags in properties too (Mapbox will stringify if necessary)
           flag: c.flag ?? [],
           service_name: c.service_name ?? '',
         },
