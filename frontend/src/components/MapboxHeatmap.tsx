@@ -44,7 +44,7 @@ export default function MapboxHeatmap({ points, style }: Props) {
     // Initialize map
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/light-v10',
+      style: 'mapbox://styles/mapbox/dark-v10',
       center: [(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2],
       zoom: 10,
       bounds: bounds,
