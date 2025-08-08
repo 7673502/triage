@@ -8,7 +8,6 @@ import type { RequestFlag, RequestItem } from '../types';
 import FilterSidebar from '../components/FilterSidebar';
 
 const mapboxToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || import.meta.env.VITE_MAPBOX_TOKEN;
-
 const defaultCenter = { lat: 39.5, lng: -98.35 };
 
 export default function MapPage() {
@@ -132,7 +131,6 @@ export default function MapPage() {
       map.easeTo({ center: [defaultCenter.lng, defaultCenter.lat], zoom: 3, duration: 600 });
       return;
     }
-
     if (coords.length === 1) {
       map.easeTo({ center: coords[0], zoom: 12, duration: 600 });
       return;
@@ -157,7 +155,6 @@ export default function MapPage() {
       zoom: 3,
       attributionControl: true,
     });
-
     mapRef.current = map;
 
     map.addControl(new mapboxgl.NavigationControl({ showCompass: true }), 'top-right');
@@ -250,15 +247,47 @@ export default function MapPage() {
         }
       });
 
-      // Click point -> Popup with abbreviated Complaint info + flags pills
+      // Helpers for popup content: escape HTML, snippet, date formatting
+      const escapeHtml = (s: string) =>
+        s
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+
+      const makeSnippet = (text: string, wordLimit = 25) => {
+        const words = text.trim().split(/\s+/).filter(Boolean);
+        if (words.length === 0) return '';
+        const truncated = words.length > wordLimit;
+        const first = words.slice(0, wordLimit).join(' ');
+        return truncated ? `${first} …` : first;
+      };
+
+      // 12-hour clock with AM/PM
+      const formatMDYHM = (dateStr?: string | null) => {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return '';
+        const month = d.getMonth() + 1;
+        const day = d.getDate();
+        const year = d.getFullYear();
+        const h24 = d.getHours();
+        const ampm = h24 >= 12 ? 'PM' : 'AM';
+        const h12 = h24 % 12 || 12;
+        const minutes = `${d.getMinutes()}`.padStart(2, '0');
+        return `${month}/${day}/${year}, ${h12}:${minutes} ${ampm}`;
+      };
+
+      // Click point -> Popup with abbreviated Complaint info + flags pills + date
       map.on('click', 'unclustered-point', (e) => {
         const feature = e.features?.[0];
         if (!feature) return;
 
         const coords = (feature.geometry as any).coordinates as [number, number];
         const props: any = feature.properties || {};
-        const id = String(props.id ?? props.service_request_id ?? '');
 
+        const id = String(props.id ?? props.service_request_id ?? '');
         const complaint =
           complaints.find((c) => String(c.service_request_id) === id) ||
           filtered.find((c) => String(c.service_request_id) === id);
@@ -273,8 +302,11 @@ export default function MapPage() {
         const incidentLabel = complaint?.incident_label ?? props.incident_label ?? 'No label';
         const media_url = complaint?.media_url ?? props.media_url ?? '';
         const serviceId = complaint?.service_request_id ?? id;
-
         const priorityColor = getPinColor(priority);
+
+        const description = complaint?.description ?? props.description ?? '';
+        const snippet = description ? makeSnippet(String(description), 25) : '';
+        const dateStr = formatMDYHM(complaint?.requested_datetime ?? props.requested_datetime ?? '');
 
         // Determine flags (prefer the complaint object; otherwise try to parse props.flag)
         let flagArray: string[] = [];
@@ -289,7 +321,6 @@ export default function MapPage() {
               flagArray = props.flag;
             }
           } catch {
-            // ignore parse errors
             flagArray = [];
           }
         }
@@ -319,20 +350,20 @@ export default function MapPage() {
         content.innerHTML = `
           <div style="font-weight:700;font-size:16px;margin-bottom:6px;display:flex;align-items:center;">
             <span style="
-            min-width:26px;
-            height:18px;
-            display:inline-flex;
-            align-items:center;
-            justify-content:center;
-            border-radius:4px;
-            margin-right:8px;
-            background:${priorityColor};
-            color:#fff;
-            font-weight:600;
-            font-size:12px;
-            padding:0 6px;
-            box-sizing:border-box;
-            white-space:nowrap;
+              min-width:26px;
+              height:18px;
+              display:inline-flex;
+              align-items:center;
+              justify-content:center;
+              border-radius:4px;
+              margin-right:8px;
+              background:${priorityColor};
+              color:#fff;
+              font-weight:600;
+              font-size:12px;
+              padding:0 6px;
+              box-sizing:border-box;
+              white-space:nowrap;
             ">${Number.isFinite(priority) ? priority : ''}</span>
             <span>${titlecase(String(incidentLabel || ''))}</span>
           </div>
@@ -356,12 +387,23 @@ export default function MapPage() {
                  />`
               : ''
           }
+          ${
+            dateStr
+              ? `<p style="margin:0 0 6px 0;font-size:12px;color:#64748b;">${dateStr}</p>`
+              : ''
+          }
+          ${
+            snippet
+              ? `<p style="margin:0 0 8px 0;font-size:13px;color:#111827;line-height:1.35;">${escapeHtml(
+                  snippet,
+                )}</p>`
+              : ''
+          }
           <p style="margin:0 0 6px 0;font-size:13px;color:#475569;">SR-ID: ${serviceId}</p>
           <div style="display:flex;flex-wrap:wrap;align-items:center;">${pillsHtml}</div>
         `;
 
         if (popupRef.current) popupRef.current.remove();
-
         const popup = new mapboxgl.Popup({ closeOnClick: true, closeButton: true })
           .setMaxWidth('340px')
           .setLngLat(coords)
@@ -374,7 +416,6 @@ export default function MapPage() {
       });
 
       setMapReady(true);
-
       // Give Mapbox a tick to compute layout if the container just became visible
       setTimeout(() => map.resize(), 0);
     });
@@ -399,7 +440,6 @@ export default function MapPage() {
     if (!mapReady) return;
     const map = mapRef.current;
     if (!map) return;
-
     const src = map.getSource('complaints') as GeoJSONSource | undefined;
     if (!src) return;
 
@@ -419,6 +459,9 @@ export default function MapPage() {
           // keep flags in properties too (Mapbox will stringify if necessary)
           flag: c.flag ?? [],
           service_name: c.service_name ?? '',
+          // include description and datetime for popup fallback
+          description: c.description ?? '',
+          requested_datetime: c.requested_datetime ?? '',
         },
       }));
 
@@ -444,7 +487,6 @@ export default function MapPage() {
     if (!mapReady || loading) return;
     const map = mapRef.current;
     if (!map) return;
-
     if (!hasFittedRef.current && !userMovedRef.current) {
       fitToComplaints(filtered, map);
       hasFittedRef.current = true;
@@ -459,16 +501,17 @@ export default function MapPage() {
   return (
     <>
       <div
-        className="map-wrapper"
+        className="map-wrapper safe-bottom"
         style={{
           display: 'flex',
-          height: 'calc(100vh - var(--nav-height, 56px))',
           position: 'fixed',
           top: 'var(--nav-height)',
           left: 0,
           right: 0,
           background: '#f8fafc',
           overflow: 'visible',
+          // Use a dynamic viewport unit to avoid iOS Safari toolbars cutting content
+          height: 'calc(var(--app-vh) - var(--nav-height, 56px))',
         }}
       >
         {/* Mobile drawer backdrop */}
@@ -496,7 +539,8 @@ export default function MapPage() {
           className="mobile-filter-btn"
           style={{
             position: 'fixed',
-            top: 'calc(var(--nav-height) + 12px)',
+            // include top safe-area inset so it doesn't clash with iOS notch UI
+            top: 'calc(var(--nav-height) + 12px + env(safe-area-inset-top))',
             left: 12,
             zIndex: 200,
             border: '1px solid #d1d5db',
@@ -542,9 +586,9 @@ export default function MapPage() {
           {/* Legend */}
           <div
             aria-label="Map legend"
+            className="map-legend"
             style={{
               position: 'absolute',
-              bottom: 12,
               left: 12,
               background: '#fff',
               border: '1px solid #e5e7eb',
@@ -558,7 +602,6 @@ export default function MapPage() {
             }}
           >
             <div style={{ fontWeight: 700, marginBottom: 6 }}>Legend</div>
-
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
               <span
                 aria-hidden
@@ -573,7 +616,6 @@ export default function MapPage() {
               />
               <span>Cluster (multiple complaints) — click to zoom</span>
             </div>
-
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
               <span
                 aria-hidden
@@ -588,7 +630,6 @@ export default function MapPage() {
               />
               <span>High priority (≥ 70)</span>
             </div>
-
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
               <span
                 aria-hidden
@@ -603,7 +644,6 @@ export default function MapPage() {
               />
               <span>Medium priority (30–69)</span>
             </div>
-
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span
                 aria-hidden
@@ -623,12 +663,31 @@ export default function MapPage() {
       </div>
 
       <style>{`
+        /* Dynamic viewport height fallback for iOS Safari toolbars */
+        :root { --app-vh: 100vh; }
+        @supports (height: 100dvh) {
+          :root { --app-vh: 100dvh; }
+        }
+
+        /* Respect iOS safe areas so bottom UI doesn't cover content */
+        .safe-bottom {
+          padding-bottom: constant(safe-area-inset-bottom);
+          padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .map-legend {
+          /* Nudge legend above the iOS Safari bottom bar */
+          bottom: calc(12px + constant(safe-area-inset-bottom));
+          bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+
         /* hide the mobile button on desktop */
         @media (min-width: 901px) {
           .mobile-filter-btn {
             display: none !important;
           }
         }
+
         /* DESKTOP: static, scrollable rail */
         @media (min-width: 901px) {
           .filter-rail {
@@ -644,6 +703,7 @@ export default function MapPage() {
             z-index: 300 !important;
           }
         }
+
         /* MOBILE: when open, make sure the rail sits above the backdrop and button */
         @media (max-width: 900px) {
           .filter-rail.show {
