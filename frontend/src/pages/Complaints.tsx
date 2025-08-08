@@ -107,7 +107,7 @@ useEffect(() => {
 
     /* sort */
     arr.sort((a, b) => {
-      if (order === 'priority') return (a.priority ?? 0) - (b.priority ?? 0);
+      if (order === 'priority') return (b.priority ?? 0) - (a.priority ?? 0);
       return new Date(b.requested_datetime ?? 0).getTime() -
              new Date(a.requested_datetime ?? 0).getTime();
     });
