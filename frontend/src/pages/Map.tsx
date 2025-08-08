@@ -264,7 +264,7 @@ export default function MapPage() {
         return truncated ? `${first} …` : first;
       };
 
-      // UPDATED: format with 12-hour clock and AM/PM
+      // 12-hour clock with AM/PM
       const formatMDYHM = (dateStr?: string | null) => {
         if (!dateStr) return '';
         const d = new Date(dateStr);
@@ -501,16 +501,17 @@ export default function MapPage() {
   return (
     <>
       <div
-        className="map-wrapper"
+        className="map-wrapper safe-bottom"
         style={{
           display: 'flex',
-          height: 'calc(100vh - var(--nav-height, 56px))',
           position: 'fixed',
           top: 'var(--nav-height)',
           left: 0,
           right: 0,
           background: '#f8fafc',
           overflow: 'visible',
+          // Use a dynamic viewport unit to avoid iOS Safari toolbars cutting content
+          height: 'calc(var(--app-vh) - var(--nav-height, 56px))',
         }}
       >
         {/* Mobile drawer backdrop */}
@@ -538,7 +539,8 @@ export default function MapPage() {
           className="mobile-filter-btn"
           style={{
             position: 'fixed',
-            top: 'calc(var(--nav-height) + 12px)',
+            // include top safe-area inset so it doesn't clash with iOS notch UI
+            top: 'calc(var(--nav-height) + 12px + env(safe-area-inset-top))',
             left: 12,
             zIndex: 200,
             border: '1px solid #d1d5db',
@@ -584,9 +586,9 @@ export default function MapPage() {
           {/* Legend */}
           <div
             aria-label="Map legend"
+            className="map-legend"
             style={{
               position: 'absolute',
-              bottom: 12,
               left: 12,
               background: '#fff',
               border: '1px solid #e5e7eb',
@@ -661,12 +663,31 @@ export default function MapPage() {
       </div>
 
       <style>{`
+        /* Dynamic viewport height fallback for iOS Safari toolbars */
+        :root { --app-vh: 100vh; }
+        @supports (height: 100dvh) {
+          :root { --app-vh: 100dvh; }
+        }
+
+        /* Respect iOS safe areas so bottom UI doesn't cover content */
+        .safe-bottom {
+          padding-bottom: constant(safe-area-inset-bottom);
+          padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .map-legend {
+          /* Nudge legend above the iOS Safari bottom bar */
+          bottom: calc(12px + constant(safe-area-inset-bottom));
+          bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+
         /* hide the mobile button on desktop */
         @media (min-width: 901px) {
           .mobile-filter-btn {
             display: none !important;
           }
         }
+
         /* DESKTOP: static, scrollable rail */
         @media (min-width: 901px) {
           .filter-rail {
@@ -682,6 +703,7 @@ export default function MapPage() {
             z-index: 300 !important;
           }
         }
+
         /* MOBILE: when open, make sure the rail sits above the backdrop and button */
         @media (max-width: 900px) {
           .filter-rail.show {
