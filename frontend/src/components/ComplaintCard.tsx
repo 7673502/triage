@@ -89,6 +89,7 @@ export default function ComplaintCard({ request }: Props) {
           fontWeight: 600,
           fontSize: 14,
           cursor: 'help',
+          flex: '0 0 32px',
         }}
       >
         {priority}
@@ -96,7 +97,7 @@ export default function ComplaintCard({ request }: Props) {
       <Tooltip id={`priority-${request.service_request_id}`} place="top" />
 
       {/* Main column */}
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
         <h3 style={{ margin: '0 0 2px', fontSize: 16, fontWeight: 600 }}>
           {titlecase(request.incident_label ?? '') || 'No Label'}
         </h3>
@@ -109,7 +110,7 @@ export default function ComplaintCard({ request }: Props) {
         </p>
 
         {request.description && (
-          <p style={{ margin: '3px 0 4px', fontSize: 14 }}>{request.description}</p>
+          <p style={{ margin: '3px 0 4px', fontSize: 14, overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{request.description}</p>
         )}
 
         <p style={{ margin: 0, fontSize: 13, color: '#6b7280' }}>
@@ -164,7 +165,7 @@ export default function ComplaintCard({ request }: Props) {
         <img
           src={request.media_url}
           alt=""
-          style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8, cursor: 'pointer' }}
+          style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', flexShrink: 0 }}
           onClick={() => setShowModal(true)}
         
           onError={(e) => (e.currentTarget.style.display = 'none')}
