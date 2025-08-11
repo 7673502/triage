@@ -4,7 +4,6 @@
 Create a `.dev.env` file at the project root with these values:
 ```
 OPENAI_API_KEY=[YOUR OPENAI KEY]
-API_KEYS=[COMMA SEPERATED LIST OF API KEYS]
 CITIES={"test" : "http://mock_open311:80"}
 MODELS=["o4-mini", "gpt-5-mini"]
 ```
