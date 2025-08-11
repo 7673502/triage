@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     openai_api_key: str = Field(..., env='OPENAI_API_KEY')
-    api_keys: str = Field(..., env='API_KEYS')
+    #api_keys: str = Field(..., env='API_KEYS')
     redis_url: str = Field('redis://redis:6379/0', env='REDIS_URL')
     poll_interval: int = Field(10, env='POLL_INTERVAL')
     cities: dict[str, str] = Field(..., env='CITIES')
