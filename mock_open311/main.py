@@ -24,7 +24,14 @@ db = []
 SERVICES = {
     '1': 'Pothole',
     '2': 'Broken Sidewalk',
-    '3': 'Litter'
+    '3': 'Litter',
+    '4': 'Graffiti',
+    '5': 'Abandoned Vehicle',
+    '6': 'Streetlight Out',
+    '7': 'Traffic Signal Malfunction',
+    '8': 'Trash - Missed Pickup',
+    '9': 'Illegal Dumping',
+    '10': 'Other',
 }
 
 @app.post('/requests', status_code=201)
