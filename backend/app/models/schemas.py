@@ -2,6 +2,7 @@ from pydantic import BaseModel, conint
 from .enums import RequestFlag
 
 class ClassifiedPayload(BaseModel):
+    service_request_id: str
     priority: conint(ge=0, le=100)
     flag: list[RequestFlag]
     priority_explanation: str
