@@ -9,16 +9,12 @@ import { RequestFlag } from '../types';
 /* ---------- helpers ---------- */
 
 const allFlags: RequestFlag[] = [
-  RequestFlag.CATEGORY_MISMATCH,
-  RequestFlag.IMAGE_MISMATCH,
-  RequestFlag.OVERSTATED_SEVERITY,
-  RequestFlag.UNCLEAR,
-  RequestFlag.DUPLICATE,
-  RequestFlag.SPAM,
-  RequestFlag.MISSING_INFO,
-  RequestFlag.MISCLASSIFIED_LOCATION,
-  RequestFlag.NON_ISSUE,
-  RequestFlag.OTHER,
+  RequestFlag.WRONG_CATEGORY,
+  RequestFlag.WRONG_LOCATION,
+  RequestFlag.IMAGE_CONFLICT,
+  RequestFlag.SEVERITY_OVERSTATED,
+  RequestFlag.INSUFFICIENT_INFO,
+  RequestFlag.INVALID_REPORT
 ];
 
 interface Props {

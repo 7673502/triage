@@ -28,30 +28,22 @@ function formatDateTime(iso?: string): string {
 
 const flagLabel: Record<RequestFlag, string> = {
   VALID: 'valid',
-  CATEGORY_MISMATCH: 'category mismatch',
-  IMAGE_MISMATCH: 'image mismatch',
-  OVERSTATED_SEVERITY: 'overstated severity',
-  UNCLEAR: 'unclear',
-  DUPLICATE: 'duplicate',
-  SPAM: 'spam',
-  MISSING_INFO: 'missing info',
-  MISCLASSIFIED_LOCATION: 'misclassified location',
-  NON_ISSUE: 'non-issue',
-  OTHER: 'other',
+  WRONG_CATEGORY: 'wrong category',
+  WRONG_LOCATION: 'wrong location',
+  IMAGE_CONFLICT: 'image conflict',
+  SEVERITY_OVERSTATED: 'severity overstated',
+  INSUFFICIENT_INFO: 'insufficient info',
+  INVALID_REPORT: 'invalid report',
 };
 
 const flagColor: Record<RequestFlag, string> = {
   VALID: '#16a34a',
-  CATEGORY_MISMATCH: '#d97706',
-  IMAGE_MISMATCH: '#d97706',
-  OVERSTATED_SEVERITY: '#d97706',
-  UNCLEAR: '#d97706',
-  DUPLICATE: '#dc2626',
-  SPAM: '#dc2626',
-  MISSING_INFO: '#d97706',
-  MISCLASSIFIED_LOCATION: '#d97706',
-  NON_ISSUE: '#dc2626',
-  OTHER: '#6b7280',
+  WRONG_CATEGORY: '#d97706',
+  WRONG_LOCATION: '#d97706',
+  IMAGE_CONFLICT: '#d97706',
+  SEVERITY_OVERSTATED: '#d97706',
+  INSUFFICIENT_INFO: '#d97706',
+  INVALID_REPORT: '#dc2626',
 };
 
 export default function ComplaintCard({ request }: Props) {
