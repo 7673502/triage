@@ -28,30 +28,22 @@ function formatDateTime(iso?: string): string {
 
 const flagLabel: Record<RequestFlag, string> = {
   VALID: 'valid',
-  CATEGORY_MISMATCH: 'category mismatch',
-  IMAGE_MISMATCH: 'image mismatch',
-  OVERSTATED_SEVERITY: 'overstated severity',
-  UNCLEAR: 'unclear',
-  DUPLICATE: 'duplicate',
-  SPAM: 'spam',
-  MISSING_INFO: 'missing info',
-  MISCLASSIFIED_LOCATION: 'misclassified location',
-  NON_ISSUE: 'non-issue',
-  OTHER: 'other',
+  WRONG_CATEGORY: 'wrong category',
+  WRONG_LOCATION: 'wrong location',
+  IMAGE_CONFLICT: 'image conflict',
+  SEVERITY_OVERSTATED: 'severity overstated',
+  INSUFFICIENT_INFO: 'insufficient info',
+  INVALID_REPORT: 'invalid report',
 };
 
 const flagColor: Record<RequestFlag, string> = {
   VALID: '#16a34a',
-  CATEGORY_MISMATCH: '#d97706',
-  IMAGE_MISMATCH: '#d97706',
-  OVERSTATED_SEVERITY: '#d97706',
-  UNCLEAR: '#d97706',
-  DUPLICATE: '#dc2626',
-  SPAM: '#dc2626',
-  MISSING_INFO: '#d97706',
-  MISCLASSIFIED_LOCATION: '#d97706',
-  NON_ISSUE: '#dc2626',
-  OTHER: '#6b7280',
+  WRONG_CATEGORY: '#d97706',
+  WRONG_LOCATION: '#d97706',
+  IMAGE_CONFLICT: '#d97706',
+  SEVERITY_OVERSTATED: '#d97706',
+  INSUFFICIENT_INFO: '#d97706',
+  INVALID_REPORT: '#dc2626',
 };
 
 export default function ComplaintCard({ request }: Props) {
@@ -89,6 +81,7 @@ export default function ComplaintCard({ request }: Props) {
           fontWeight: 600,
           fontSize: 14,
           cursor: 'help',
+          flex: '0 0 32px',
         }}
       >
         {priority}
@@ -96,7 +89,7 @@ export default function ComplaintCard({ request }: Props) {
       <Tooltip id={`priority-${request.service_request_id}`} place="top" />
 
       {/* Main column */}
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
         <h3 style={{ margin: '0 0 2px', fontSize: 16, fontWeight: 600 }}>
           {titlecase(request.incident_label ?? '') || 'No Label'}
         </h3>
@@ -109,7 +102,7 @@ export default function ComplaintCard({ request }: Props) {
         </p>
 
         {request.description && (
-          <p style={{ margin: '3px 0 4px', fontSize: 14 }}>{request.description}</p>
+          <p style={{ margin: '3px 0 4px', fontSize: 14, overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{request.description}</p>
         )}
 
         <p style={{ margin: 0, fontSize: 13, color: '#6b7280' }}>
@@ -164,7 +157,7 @@ export default function ComplaintCard({ request }: Props) {
         <img
           src={request.media_url}
           alt=""
-          style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8, cursor: 'pointer' }}
+          style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', flexShrink: 0 }}
           onClick={() => setShowModal(true)}
         
           onError={(e) => (e.currentTarget.style.display = 'none')}
