@@ -52,11 +52,21 @@ async def poll_city(city: str) -> None:
                 log.info(f'{city}: page {page}, about to classify {len(new_requests)}')
                 classifications = await classify_batch(new_requests)
 
-                for request, classified in zip(new_requests, classifications):
+                classified_id_mappings = {str(c.service_request_id): c for c in classifications}
+                missing = []
+
+                for request in new_requests:
                     req_id = str(request['service_request_id'])
+                    classified = classified_id_mappings.get(req_id)
+                    if not classified:
+                        missing.append(req_id)
+                        continue
                     payload = request | classified.model_dump()
                     payload['city'] = city
                     await cache.cache_request(city, req_id, payload)
+                
+                if missing:
+                    log.info('%s: missing classifications for ids: %s', city, missing)
 
             log.info("%s: page %d fetched %d items and processed %d", city, page, len(requests), len(new_requests))
 
