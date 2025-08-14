@@ -100,7 +100,7 @@ async def classify_batch(requests: list[dict]) -> list[ClassifiedPayload]:
             log.info('RateLimitError occurred; switching from %s to %s', settings.models[model_idx], settings.models[model_idx+1])
             continue
 
-async def classify_batch_in_chunks(requests: list[dict], chunk_size: int = 5) -> list[ClassifiedPayload]:
+async def classify_batch_in_chunks(requests: list[dict], chunk_size: int = 1) -> list[ClassifiedPayload]:
     chunks = [requests[i : i + chunk_size] for i in range(0, len(requests), chunk_size)]
     
     tasks = [asyncio.create_task(classify_batch(chunk)) for chunk in chunks]
