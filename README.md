@@ -1,5 +1,8 @@
 # Triage
 
+## TODO
+- switch map provider (again) to free option: https://openfreemap.org/
+
 ## Development
 Create a `.dev.env` file at the project root with these values:
 ```
