@@ -1,5 +1,12 @@
 # Triage
 
+You can see a demo of Triage at https://www.youtube.com/watch?v=xkxlRWWWP_c.
+
+**Note (Oct 6, 2025):** A full-scale rebuild of Triage is currently in progress with a new development team.
+
+*This repository reflects the original research prototype.*
+
+
 ## TODO
 - switch map provider (again) to free option: https://openfreemap.org/
 
@@ -27,7 +34,7 @@ VITE_MAPBOX_TOKEN=[your MapBox token]
 ```
 
 ## Production
-*work in progress...*
+Triage was being ran on a virtual machine hosted on [DigitalOcean](https://www.digitalocean.com/) but is not currently live while the new team works on the rebuild.
 
 ## Appendix
 ### Cities List
