@@ -1,14 +1,12 @@
 # Triage
 
-You can see a demo of Triage at https://www.youtube.com/watch?v=xkxlRWWWP_c.
+Triage is a tool for local governments to process 311 complaints more efficiently by automatically prioritizing reports and flagging for potential issues such as missing information. 
 
-**Note (Oct 6, 2025):** A full-scale rebuild of Triage is currently in progress with a new development team.
+Triage was kindly sponsored by OpenAI and the 2025 UW-Madison Summer AI Lab. This project placed top 3 and was selected to present to the VP of engineering and VP of applied infrastructure at OpenAI. While the original prototype website is no longer live, you can see a demo of Triage on [YouTube](https://www.youtube.com/watch?v=xkxlRWWWP_c). 
 
-*This repository reflects the original research prototype.*
+A full-scale rebuild of Triage is currently in progress with a new development team. This repository reflects the original research prototype.
 
-
-## TODO
-- switch map provider (again) to free option: https://openfreemap.org/
+More information is available at this [slide deck](https://docs.google.com/presentation/d/1VjSKiz6Yig8xiYYz8R5TfOt2AAXwVRcTkTDxuv9pRm8/edit?usp=sharing).
 
 ## Development
 Create a `.dev.env` file at the project root with these values:
@@ -35,23 +33,3 @@ VITE_MAPBOX_TOKEN=[your MapBox token]
 
 ## Production
 Triage was being ran on a virtual machine hosted on [DigitalOcean](https://www.digitalocean.com/) but is not currently live while the new team works on the rebuild.
-
-## Appendix
-### Cities List
-These are the endpoints I've found that have particularly rich data
-| City              | Endpoint                                                    |
-| ----------------- | ----------------------------------------------------------- |
-| Boston, MA        | https://311.boston.gov/open311/v2                           |
-| San Francisco, CA | https://san-francisco2-production.spotmobile.net/open311/v2 |
-| Clark County, NV  | https://seeclickfix.com/open311/v2/1375                     |
-| Tucson, AZ        | https://seeclickfix.com/open311/v2/36                       |
-| Detroit, MI       | https://seeclickfix.com/open311/v2/507                      |
-
-### Model Performance
-| Model       | Notes                                            |
-| ----------- | ------------------------------------------------ |
-| gpt-4o-mini | very bad, do not use                             |
-| o4-mini     | works decently                                   |
-| gpt-4.1     | seems to work decently, further testing required |
-| gpt-5-nano  | works surprisingly well but very bad at flagging |
-| gpt-5-mini  | works quite well and more cost effective than o4 | 
